@@ -1,8 +1,11 @@
-import React from 'react'
+import React from 'react';
+import { Button } from '../components/ui/button';
 
 const Signin = () => {
   return (
-    <div>Signin</div>
+    <div>
+      <Button variant="default" size="lg">Button</Button>
+    </div>
   )
 }
 
