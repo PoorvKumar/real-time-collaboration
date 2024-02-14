@@ -100,7 +100,8 @@ const AuthProvider = ({ children }) => {
             login,
             logout,
             hasAnyRole,
-            loading
+            loading,
+            setLoading
         }}>
         {children}
     </AuthContext.Provider>
