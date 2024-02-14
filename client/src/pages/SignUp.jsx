@@ -5,8 +5,8 @@ import UserSignUp from '../components/auth/UserSignUp';
 
 const SignUp = () => {
   return (
-    <div>
-      <div className='md:hidden'>
+    <>
+      <div className='hidden'>
         <img src="/images/login-bg.jpg" alt="loginBG" width={1280} height={843} className='object-contain' />
       </div>
 
@@ -79,7 +79,7 @@ const SignUp = () => {
             </p>
           </div>
       </div>
-    </div>
+    </>
   )
 }
 

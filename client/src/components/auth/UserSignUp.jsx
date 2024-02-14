@@ -6,10 +6,11 @@ import { Icons } from '../ui/icons';
 import { Button } from '../ui/button';
 import api from '../../api/api';
 import { useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const UserSignUp = () => {
 
-    const { loading } = useAuthenticate();
+    const { loading, googleLogin } = useAuthenticate();
 
     const navigate=useNavigate();
 
@@ -34,6 +35,12 @@ const UserSignUp = () => {
             console.error('Error creating user', error.message);
         }
     };
+
+    const googleLoginFunc=useGoogleLogin({
+        onSuccess: googleLogin,
+        onError: ()=> console.log('Google Login Failed'),
+        flow: 'auth-code',
+      });
 
     return (
         <div className='grid gap-3 lg:p-10'>
@@ -97,7 +104,7 @@ const UserSignUp = () => {
                     </span>
                 </div>
             </div>
-            <Button variant="outline" type="button" disabled={loading}>
+            <Button variant="outline" type="button" disabled={loading} onClick={()=> googleLoginFunc()}>
                 {loading ? (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : (

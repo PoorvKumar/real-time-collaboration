@@ -5,8 +5,8 @@ import UserAuthForm from '../components/auth/UserAuthForm';
 const Signin = () => {
 
   return (
-    <div>
-      <div className='md:hidden'>
+    <>
+      <div className='hidden'>
         <img src="/images/login-bg.jpg" alt="loginBG" width={1280} height={843} className='object-contain' />
       </div>
 
@@ -79,7 +79,7 @@ const Signin = () => {
             </p>
           </div>
       </div>
-    </div>
+    </>
   )
 }
 

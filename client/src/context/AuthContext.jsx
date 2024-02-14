@@ -75,8 +75,8 @@ const AuthProvider = ({ children }) => {
     }
 
     const login = async (credentials) => {
-        const { email, password } = credentials;
         setLoading(true);
+        const { email, password } = credentials;
 
         try {
             const response = await api.post('/auth/signin', credentials);
@@ -97,8 +97,8 @@ const AuthProvider = ({ children }) => {
 
     const googleLogin=async (codeResponse)=>
     {
-        const { code }=codeResponse;
         setLoading(true);
+        const { code }=codeResponse;
 
         try
         {

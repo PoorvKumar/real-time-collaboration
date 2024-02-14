@@ -1,29 +1,55 @@
-const { OAuth2Client }=require("google-auth-library");
+const { OAuth2Client } = require("google-auth-library");
+const axios=require("axios");
 
-const client=new OAuth2Client(process.env.GOOGLE_CLIENT_ID,process.env.GOOGLE_CLIENT_SECRET,
-    /**
-   * To get access_token and refresh_token in server side,
-   * the data for redirect_uri should be postmessage.
-   * postmessage is magic value for redirect_uri to get credentials without actual redirect uri.
-   */
-    'postmessage');
+const client = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET
+);
 
-const getProfileInfo=async (code)=>
-{
-    const r=await client.getToken(code);
+const getProfileInfo = async (code) => {
+    
+    const googleClientId = process.env.GOOGLE_CLIENT_ID;
+    const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const redirectUri = process.env.REDIRECT_URI; 
 
-    const idToken=r.tokens.id_token;
-
-    const ticket=await client.verifyIdToken({
-        idToken,
-        audience: process.env.GOOGLE_CLIENT_ID
+  try {
+    const encodedCredentials = Buffer.from(`${googleClientId}:${googleClientSecret}`).toString('base64');
+    const authorizationHeader = `Basic ${encodedCredentials}`;
+    
+    const response = await axios.post('https://oauth2.googleapis.com/token', {
+      grant_type: 'authorization_code',
+      client_id: googleClientId,
+      client_secret: googleClientSecret,
+      redirect_uri: redirectUri,
+      code
+    }, {
+      headers: {
+        Authorization: authorizationHeader
+      }
     });
 
-    const payload=ticket.getPayload();
+    if (response.status === 200) {
+        const accessToken = response.data.access_token;
+        const profileResponse = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+  
+        return profileResponse.data; // User profile information
+      } else {
+        console.error('Error:', response.status, response.data);
+        // Handle error appropriately (e.g., return specific error message or status code)
+      }
 
-    return payload;
-}
+  } 
+  catch(error) 
+  {
+    console.error("Error:", error.message);
+    throw new Error("Failed to retrieve profile information from Google",error);
+  }
+};
 
-module.exports={
-    getProfileInfo,
-}
+module.exports = {
+  getProfileInfo,
+};

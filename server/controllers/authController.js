@@ -1,7 +1,7 @@
 const User=require("../models/user");
 const bcrypt=require("bcryptjs");
 const { generateToken, generateRefreshToken } = require("../utils/jwtUtil");
-const { getProfileInfo } = require("../utils/googleoaUTH.JS");
+const { getProfileInfo }=require("../utils/googleOAuth");
 
 const signup=async (req,res,next)=>
 {
@@ -85,24 +85,34 @@ const googleLogin=async (req,res,next)=>
 {
     try
     {
-        const { accessCode }=req.body;
+        const { code }=req.body;
 
-        const profile=getProfileInfo(accessCode);
+        const profile=await getProfileInfo(code);
+        console.log(profile);
 
-        const user=new User({
-            name: profile.name,
-            email: profile.email
-        });
+        if(!profile)
+        {
+            return res.status(404).json({ error: "User Not Found" });
+        }
 
+        const user = await User.findOne({ email: profile.email });
+        if (!user) {
+            // If the user doesn't exist, create a new user
+            const newUser = new User({
+                name: profile.name,
+                email: profile.email,
+            });
+            await newUser.save();
+            user = newUser;
+        }
+
+        const token = generateToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        user.refreshToken = refreshToken;
         await user.save();
 
-        const token=generateToken(user);
-        const refreshToken=generateRefreshToken(user);
-
-        user.refreshToken=refreshToken;
-        await user.save();
-
-        const userData=Object.assign({},{ name: user.name, email: user.email });
+        const userData = { name: user.name, email: user.email };
 
         return res.status(200).json({ token, refreshToken, userData });
     }
@@ -110,7 +120,6 @@ const googleLogin=async (req,res,next)=>
     {
         next(error);
     }
-    
 };
 
 module.exports={
