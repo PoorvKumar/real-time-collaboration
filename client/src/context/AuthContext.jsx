@@ -3,9 +3,10 @@ import api from "../api/api";
 import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext({
-    isAuthenticated: false,
-    user: null,
+    isAuthenticated: localStorage.getItem("token")?true:false,
+    user: localStorage.getItem("user") === null ? null : JSON.parse(localStorage.getItem("user")),
     login: () => { },
+    googleLogin: () => { },
     logout: () => { },
     roles: [],
     hasAnyRole: (roles) => false,
@@ -13,15 +14,15 @@ const AuthContext = createContext({
 });
 
 const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("token")?true:false);
+    const [user, setUser] = useState(localStorage.getItem("user") === null ? null : JSON.parse(localStorage.getItem("user")));
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const checkAuth = () => {
             setLoading(true);
 
-            const authToken = localStorage.getItem("authToken");
+            const authToken = localStorage.getItem("token");
             if (authToken) {
                 try {
                     const decodedToken = jwtDecode(authToken);
@@ -29,23 +30,24 @@ const AuthProvider = ({ children }) => {
 
                     // Token expired
                     if (Date.now() >= exp * 1000) {
-                        localStorage.removeItem("authToken");
+                        localStorage.removeItem("token");
                         localStorage.removeItem("refreshToken");
                         setIsAuthenticated(false);
                         setUser(null);
                     }
                     else {
-                        setUser(decodedToken.user);
+                        // setUser(decodedToken.user);
                         setIsAuthenticated(true);
                     }
                 }
                 catch (error) {
                     console.log("Error decoding token", error);
-                    localStorage.removeItem("authToken");
+                    localStorage.removeItem("token");
                     localStorage.removeItem("refreshToken");
                     setIsAuthenticated(false);
                     setUser(null);
                 }
+                // setIsAuthenticated(true);
             }
             else {
                 setIsAuthenticated(false);
@@ -57,32 +59,65 @@ const AuthProvider = ({ children }) => {
         checkAuth();
     }, []);
 
+    const setDetails=(data)=>
+    {
+        //Storing tokens in localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.setItem("user",JSON.stringify(data.userData));
+
+        // const decodedToken = jwtDecode(authToken);
+        // setUser(decodedToken.user);
+
+        setUser(data.userData);
+        // setRoles(data.roles);
+        setIsAuthenticated(true);
+    }
+
     const login = async (credentials) => {
         const { email, password } = credentials;
         setLoading(true);
 
         try {
-            const response = await api.post('/api/auth', credentials);
+            const response = await api.post('/auth/signin', credentials);
             const { data } = response;
 
-            //Storing tokens in localStorage
-            localStorage.setItem("authToken", data.authToken);
-            localStorage.setItem("refreshToken", data.refreshToken);
+            setDetails(data);
+            setLoading(false);
 
-            const decodedToken = jwtDecode(authToken);
-            setUser(decodedToken.user);
-
-            // setUser(data.user);
-            // setRoles(data.roles);
-            setIsAuthenticated(true);
+            return true;
         }
         catch (error) {
-            console.log("Login error:", error);
-        }
-        finally {
+            console.log("Login error:", error.message);
             setLoading(false);
         }
+
+        return false;
     };
+
+    const googleLogin=async (codeResponse)=>
+    {
+        const { code }=codeResponse;
+        setLoading(true);
+
+        try
+        {
+            const response=await api.post('/auth/google',{ code });
+            const { data }=response;
+
+            setDetails(data);
+            setLoading(false);
+
+            return true;
+        }
+        catch(error)
+        {
+            console.log("Google Login error:", error.message);
+            setLoading(false);
+        }
+
+        return false;
+    }
 
     const logout = () => {
         setUser(null);
@@ -98,6 +133,7 @@ const AuthProvider = ({ children }) => {
             isAuthenticated,
             user,
             login,
+            googleLogin,
             logout,
             hasAnyRole,
             loading,

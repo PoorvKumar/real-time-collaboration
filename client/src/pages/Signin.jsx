@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button } from '../components/ui/button';
 import UserAuthForm from '../components/auth/UserAuthForm';
-import UserSignUp from '../components/auth/UserSignUp';
 
 const Signin = () => {
+
   return (
     <div>
       <div className='md:hidden'>

@@ -1,17 +1,38 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { useAuthenticate } from '../../context/AuthContext';
 import { Icons } from '../ui/icons';
 import { Button } from '../ui/button';
+import api from '../../api/api';
+import { useNavigate } from 'react-router-dom';
 
 const UserSignUp = () => {
 
-    const { login, loading } = useAuthenticate();
+    const { loading } = useAuthenticate();
+
+    const navigate=useNavigate();
+
+    const [name,setName]=useState("");
+    const [email,setEmail]=useState("");
+    const [password,setPassword]=useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
+        try
+        {
+            const response=await api.post('/auth/signup',{name,email,password});
+
+            if(response.status===201)
+            {
+                navigate('/signin');
+            }
+        }
+        catch(error)
+        {
+            console.error('Error creating user', error.message);
+        }
     };
 
     return (
@@ -28,6 +49,7 @@ const UserSignUp = () => {
                             type="text"
                             autoCapitalize="true"
                             disabled={loading}
+                            onChange={(e)=>setName(e.target.value)}
                         />
                     </div>
                     <div className="grid gap-1">
@@ -42,6 +64,7 @@ const UserSignUp = () => {
                             autoComplete="email"
                             autoCorrect="off"
                             disabled={loading}
+                            onChange={(e)=>setEmail(e.target.value)}
                         />
                     </div>
                     <div className="grid gap-1">
@@ -53,6 +76,7 @@ const UserSignUp = () => {
                             placeholder="Password"
                             type="password"
                             disabled={loading}
+                            onChange={(e)=>setPassword(e.target.value)}
                         />
                     </div>
                     <Button disabled={loading} type="submit">

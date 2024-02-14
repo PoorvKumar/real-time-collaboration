@@ -13,8 +13,6 @@ function App() {
 
   const { isAuthenticated, loading } = useAuthenticate();
 
-  console.log(loading);
-
   if (loading) {
     return <Loader />;
   }
@@ -25,14 +23,10 @@ function App() {
         <Route path='/signin' element={<Signin />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/' element={isAuthenticated ? <Dashboard /> : <Landing />} />
-        {/* <ProtectedRoute path='/board/:boardId' element={<MultiplayerBoard />} /> */}
-        <Route
-          path='/board/:boardId'
-          element={
-            <ProtectedRoute>
-              <MultiplayerBoard />
-            </ProtectedRoute>
-          } />
+        {/* <Route path='/board/:boardId' element={<MultiplayerBoard />} /> */}
+          <Route element={<ProtectedRoute />}>
+            <Route path='/board/:id' element={<MultiplayerBoard />} />
+          </Route>
       </Routes>
     </BrowserRouter>
   )

@@ -1,17 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { useAuthenticate } from '../../context/AuthContext';
 import { Icons } from '../ui/icons';
 import { Button } from '../ui/button';
+import { useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const UserAuthForm = () => {
 
-    const { login, loading } = useAuthenticate();
+    const { login, loading, googleLogin } = useAuthenticate();
+
+    const googleLoginFunc=useGoogleLogin({
+        onSuccess: googleLogin,
+        onError: ()=> console.log('Google Login Failed'),
+        flow: 'auth-code',
+      });
+
+    const navigate=useNavigate();
+
+    const [email,setEmail]=useState("");
+    const [password,setPassword]=useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
+        const result=await login({email,password});
+
+        if(result)
+        {
+            navigate('/');
+        }
     };
 
     return (
@@ -30,6 +49,7 @@ const UserAuthForm = () => {
                             autoComplete="email"
                             autoCorrect="off"
                             disabled={loading}
+                            onChange={(e)=>setEmail(e.target.value)}
                         />
                     </div>
                     <div className="grid gap-1">
@@ -41,6 +61,7 @@ const UserAuthForm = () => {
                             placeholder="Password"
                             type="password"
                             disabled={loading}
+                            onChange={(e)=>setPassword(e.target.value)}
                         />
                     </div>
                     <Button disabled={loading} type="submit">
@@ -61,7 +82,7 @@ const UserAuthForm = () => {
                     </span>
                 </div>
             </div>
-            <Button variant="outline" type="button" disabled={loading}>
+            <Button variant="outline" type="button" disabled={loading} onClick={()=>googleLoginFunc()}>
                 {loading ? (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : (

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useAuthenticate } from '../context/AuthContext';
 
 const Dashboard = () => {
   return (
