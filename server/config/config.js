@@ -1,5 +1,8 @@
-const config={
+exports.config={
     CLIENT_URL: "http://localhost:5173",
 };
 
-module.exports=config;
+exports.allowedOrigins=[
+    "http://localhost:5173"
+];
+

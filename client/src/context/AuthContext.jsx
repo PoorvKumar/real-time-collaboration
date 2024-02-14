@@ -1,65 +1,111 @@
-import React, { createContext, useContext, useState} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import api from "../api/api";
+import { jwtDecode } from "jwt-decode";
 
-const AuthContext=createContext({
+const AuthContext = createContext({
     isAuthenticated: false,
     user: null,
-    login: ()=> {},
-    logout: ()=> {},
+    login: () => { },
+    logout: () => { },
     roles: [],
-    hasAnyRole: (roles)=> false
+    hasAnyRole: (roles) => false,
+    loading: false
 });
 
-const AuthProvider=({children})=>
-{
-    const [isAuthenticated,setIsAuthenticated]=useState(false);
-    const [user,setUser]=useState(null);
-    const [roles,setRoles]=useState([]);
+const AuthProvider = ({ children }) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    const login=async (credentials)=>
-    {
-        const { email, password }=credentials;
-        try
-        {
-            const response=await api.post('/api/user',credentials);
-            const { data }=response;
+    useEffect(() => {
+        const checkAuth = () => {
+            setLoading(true);
 
-            setUser(data.user);
-            setRoles(data.roles);
+            const authToken = localStorage.getItem("authToken");
+            if (authToken) {
+                try {
+                    const decodedToken = jwtDecode(authToken);
+                    const { exp } = decodedToken;
+
+                    // Token expired
+                    if (Date.now() >= exp * 1000) {
+                        localStorage.removeItem("authToken");
+                        localStorage.removeItem("refreshToken");
+                        setIsAuthenticated(false);
+                        setUser(null);
+                    }
+                    else {
+                        setUser(decodedToken.user);
+                        setIsAuthenticated(true);
+                    }
+                }
+                catch (error) {
+                    console.log("Error decoding token", error);
+                    localStorage.removeItem("authToken");
+                    localStorage.removeItem("refreshToken");
+                    setIsAuthenticated(false);
+                    setUser(null);
+                }
+            }
+            else {
+                setIsAuthenticated(false);
+            }
+
+            setLoading(false);
+        }
+
+        checkAuth();
+    }, []);
+
+    const login = async (credentials) => {
+        const { email, password } = credentials;
+        setLoading(true);
+
+        try {
+            const response = await api.post('/api/auth', credentials);
+            const { data } = response;
+
+            //Storing tokens in localStorage
+            localStorage.setItem("authToken", data.authToken);
+            localStorage.setItem("refreshToken", data.refreshToken);
+
+            const decodedToken = jwtDecode(authToken);
+            setUser(decodedToken.user);
+
+            // setUser(data.user);
+            // setRoles(data.roles);
             setIsAuthenticated(true);
         }
-        catch(error)
-        {
+        catch (error) {
             console.log("Login error:", error);
+        }
+        finally {
+            setLoading(false);
         }
     };
 
-    const logout=()=>
-    {
+    const logout = () => {
         setUser(null);
-        setRoles([]);
-        setToken(null);
         setIsAuthenticated(false);
     };
 
-    const hasAnyRole=(requiredRoles)=>
-    {
-        return requiredRoles.some((role)=>roles.includes(role));
+    const hasAnyRole = (requiredRoles) => {
+        return requiredRoles.some((role) => roles.includes(role));
     };
 
-    return <AuthContext.Provider 
-        value={{ 
-            isAuthenticated, 
+    return <AuthContext.Provider
+        value={{
+            isAuthenticated,
             user,
             login,
             logout,
-            roles,
-            hasAnyRole
-             }}>
+            hasAnyRole,
+            loading
+        }}>
         {children}
     </AuthContext.Provider>
 };
 
 export { AuthContext, AuthProvider };
 
-export const useAuthenticate=()=> useContext(AuthContext);
+export const useAuthenticate = () => useContext(AuthContext);
