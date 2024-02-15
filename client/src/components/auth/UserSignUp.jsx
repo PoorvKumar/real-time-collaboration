@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import api from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
+import { toast } from 'react-toastify';
 
 const UserSignUp = () => {
 
@@ -36,8 +37,36 @@ const UserSignUp = () => {
         }
     };
 
+    const successNotif=()=>
+    {
+        toast.success("Signin Successful!", {
+            position: "top-center"
+        });
+    };
+
+    const googleLogin2=async (code)=>
+    {
+        try
+        {
+            const response=await googleLogin(code);
+
+            if(response)
+            {
+                successNotif();
+                navigate('/');
+            }
+        }
+        catch(error)
+        {
+            console.log("Error:", error.message);
+            toast.error("Unable to signin to Google",{
+                position: "top-center"
+            });
+        }
+    }
+
     const googleLoginFunc=useGoogleLogin({
-        onSuccess: googleLogin,
+        onSuccess: googleLogin2,
         onError: ()=> console.log('Google Login Failed'),
         flow: 'auth-code',
       });

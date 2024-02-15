@@ -95,7 +95,7 @@ const googleLogin=async (req,res,next)=>
             return res.status(404).json({ error: "User Not Found" });
         }
 
-        const user = await User.findOne({ email: profile.email });
+        let user = await User.findOne({ email: profile.email });
         if (!user) {
             // If the user doesn't exist, create a new user
             const newUser = new User({
@@ -109,12 +109,14 @@ const googleLogin=async (req,res,next)=>
         const token = generateToken(user);
         const refreshToken = generateRefreshToken(user);
 
+        console.log(token,refreshToken,user);
+
         user.refreshToken = refreshToken;
         await user.save();
 
         const userData = { name: user.name, email: user.email };
 
-        return res.status(200).json({ token, refreshToken, userData });
+        return res.status(201).json({ token, refreshToken, userData });
     }
     catch(error)
     {

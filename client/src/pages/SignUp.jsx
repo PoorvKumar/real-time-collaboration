@@ -32,7 +32,7 @@ const SignUp = () => {
             >
               <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
             </svg>
-            Real-time Collaboration Tool for Developers
+            <a href="/" > Real-time Collaboration Tool for Developers</a>
           </div>
           <div className="relative z-20 mt-auto">
             <blockquote className="space-y-2 bg-zinc-700/70 rounded-lg p-2">

@@ -6,30 +6,78 @@ import { Icons } from '../ui/icons';
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
+import { toast } from 'react-toastify';
 
 const UserAuthForm = () => {
 
     const { login, loading, googleLogin } = useAuthenticate();
-
-    const googleLoginFunc=useGoogleLogin({
-        onSuccess: googleLogin,
-        onError: ()=> console.log('Google Login Failed'),
-        flow: 'auth-code',
-      });
 
     const navigate=useNavigate();
 
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
 
+    const successNotif=()=>
+    {
+        toast.success("Signin Successful!", {
+            position: "top-center"
+        });
+    };
+
+    const googleLogin2=async (code)=>
+    {
+        try
+        {
+            const response=await googleLogin(code);
+
+            if(response)
+            {
+                successNotif();
+                navigate('/');
+            }
+        }
+        catch(error)
+        {
+            console.log("Error:", error.message);
+            toast.error("Unable to signin to Google",{
+                position: "top-center"
+            });
+        }
+    }
+
+    const googleLoginFunc=useGoogleLogin({
+        onSuccess: googleLogin2,
+        onError: ()=> console.log('Google Login Failed'),
+        flow: 'auth-code',
+      });
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const result=await login({email,password});
-
-        if(result)
+        if(!email || !password)
         {
-            navigate('/');
+            toast.warn("Missing Information!",{
+                position: "top-center"
+            });
+            return ;
+        }
+
+        try
+        {
+            const result=await login({email,password});
+
+            if(result)
+            {
+                successNotif();
+                navigate('/');
+            }
+        }
+        catch(error)
+        {
+            console.log("Error:", error.message);
+            toast.error("Unable to signin",{
+                position: "top-center"
+            });
         }
     };
 
