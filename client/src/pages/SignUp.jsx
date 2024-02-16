@@ -10,7 +10,7 @@ const SignUp = () => {
         <img src="/images/login-bg.jpg" alt="loginBG" width={1280} height={843} className='object-contain' />
       </div>
 
-      <div className='container relative hidden h-[100vh] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
+      <div className='container relative h-[100vh] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
         <div className='flex justify-center items-center absolute right-4 top-4 md:right-8 md:top-8'>
           <span>Already a user?</span>
           <a href="/signin">

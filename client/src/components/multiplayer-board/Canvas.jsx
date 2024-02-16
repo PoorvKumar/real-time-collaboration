@@ -112,7 +112,7 @@ const Canvas = ({ boardId }) => {
     };
 
     const onPointerLeave = () => {
-
+        setCursorPosition(null);
     };
 
     const onPointerDown = () => {
@@ -143,7 +143,7 @@ const Canvas = ({ boardId }) => {
                 >
                     <circle cx="50" cy="50" r="40" fill="blue" />
                     <CursorPresence />
-                    <circle cx={cursorPosition.x} cy={cursorPosition.y} r={5} fill="red" />
+                    <circle cx={cursorPosition?.x} cy={cursorPosition?.y} r={5} fill="red" />
                 </g>
             </svg>
         </main>
