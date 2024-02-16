@@ -88,7 +88,7 @@ const googleLogin=async (req,res,next)=>
         const { code }=req.body;
 
         const profile=await getProfileInfo(code);
-        console.log(profile);
+        // console.log(profile);
 
         if(!profile)
         {
@@ -108,8 +108,6 @@ const googleLogin=async (req,res,next)=>
 
         const token = generateToken(user);
         const refreshToken = generateRefreshToken(user);
-
-        console.log(token,refreshToken,user);
 
         user.refreshToken = refreshToken;
         await user.save();

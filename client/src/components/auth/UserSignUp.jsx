@@ -28,12 +28,26 @@ const UserSignUp = () => {
 
             if(response.status===201)
             {
+                toast.success("User Created Successfully",{
+                    position: "top-center"
+                });
                 navigate('/signin');
             }
         }
         catch(error)
         {
-            console.error('Error creating user', error.message);
+            if(error.response.status===409)
+            {
+                toast.error("User already exists",{
+                    position: "top-center"
+                });
+                console.error('Error creating user', error);
+                return ;
+            }
+            console.error('Error creating user', error);
+            toast.error("Error Creating User",{
+                position: "top-center"
+            });
         }
     };
 
@@ -73,8 +87,8 @@ const UserSignUp = () => {
 
     return (
         <div className='grid gap-3 lg:p-10'>
-            <form onSubmit={handleSubmit}>
-                <div className='grid gap-2'>
+            <form onSubmit={handleSubmit} className='flex justify-center'>
+                <div className='grid gap-2 w-3/4'>
                     <div className="grid gap-1">
                         <Label className="sr-only" htmlFor="name">
                             Name
@@ -133,7 +147,7 @@ const UserSignUp = () => {
                     </span>
                 </div>
             </div>
-            <Button variant="outline" type="button" disabled={loading} onClick={()=> googleLoginFunc()}>
+            <Button variant="outline" type="button" disabled={loading} onClick={()=> googleLoginFunc()} className="mx-16">
                 {loading ? (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -141,7 +155,7 @@ const UserSignUp = () => {
                 )}{" "}
                 Google
             </Button>
-            <Button variant="outline" type="button" disabled={loading}>
+            <Button variant="outline" type="button" disabled={loading} className="mx-16">
                 {loading ? (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : (

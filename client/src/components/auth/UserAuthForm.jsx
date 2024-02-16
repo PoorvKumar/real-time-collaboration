@@ -83,8 +83,8 @@ const UserAuthForm = () => {
 
     return (
         <div className='grid gap-3 lg:p-10'>
-            <form onSubmit={handleSubmit}>
-                <div className='grid gap-2'>
+            <form onSubmit={handleSubmit} className='flex justify-center'>
+                <div className='grid gap-2 w-3/4'>
                     <div className="grid gap-1">
                         <Label className="sr-only" htmlFor="email">
                             Email
@@ -130,7 +130,7 @@ const UserAuthForm = () => {
                     </span>
                 </div>
             </div>
-            <Button variant="outline" type="button" disabled={loading} onClick={()=>googleLoginFunc()}>
+            <Button variant="outline" type="button" disabled={loading} onClick={()=>googleLoginFunc()} className="mx-16">
                 {loading ? (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -138,7 +138,7 @@ const UserAuthForm = () => {
                 )}{" "}
                 Google
             </Button>
-            <Button variant="outline" type="button" disabled={loading}>
+            <Button variant="outline" type="button" disabled={loading} className="mx-16">
                 {loading ? (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
