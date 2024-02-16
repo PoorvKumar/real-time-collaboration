@@ -1,14 +1,17 @@
-import React from 'react'
-import { useAuthenticate } from '../context/AuthContext';
-import { redirect } from 'react-router-dom';
-import Room from '../components/multiplayer-board/Room';
+import React from 'react';
+import { redirect, useParams } from 'react-router-dom';
 import Canvas from '../components/multiplayer-board/Canvas';
+import { RoomProvider, useRoom } from '../context/RoomContext';
 
 const MultiplayerBoard = () => {
+
+  const { boardId }=useParams();
+  console.log(boardId);
+
   return (
-    <Room>
-      <Canvas />
-    </Room>
+    <RoomProvider boardId={boardId}>
+      <Canvas boardId={boardId} />
+    </RoomProvider>
   )
 }
 

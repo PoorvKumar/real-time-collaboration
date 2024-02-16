@@ -39,7 +39,7 @@ function App() {
           {/* <Route path='/' element={isAuthenticated ? <Dashboard /> : <Landing />} /> */}
           {/* <Route path='/board/:boardId' element={<MultiplayerBoard />} /> */}
           <Route element={<ProtectedRoute />}>
-            <Route path='/board/:id' element={<MultiplayerBoard />} />
+            <Route path='/board/:boardId' element={<MultiplayerBoard />} />
           </Route>
         </Routes>
       </BrowserRouter>

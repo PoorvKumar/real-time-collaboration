@@ -41,12 +41,29 @@ const { CLIENT_URL } = require("./config/config");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: CLIENT_URL,
+    origin: "http://localhost:5173",
   },
 });
 
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
+
+  socket.on("joinRoom",(id)=>
+  {
+    socket.join(id);
+  });
+
+  socket.on("userJoin",(data)=>
+  {
+    const roomId=Array.from(socket.rooms)[1];
+    socket.to(roomId).emit("userJoin",data);
+  });
+
+  socket.on("cursorPosition",(data)=>
+  {
+    const roomId=Array.from(socket.rooms)[1];
+    socket.to(roomId).emit("updateCursorPosition",data);
+  });
 
   socket.on("disconnect", () => {
     console.log("User disconnected", socket.id);
