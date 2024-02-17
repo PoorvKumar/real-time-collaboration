@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import api from "../api/api";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 const AuthContext = createContext({
     isAuthenticated: localStorage.getItem("token")?true:false,
@@ -90,6 +91,9 @@ const AuthProvider = ({ children }) => {
         catch (error) {
             console.log("Login error:", error.message);
             setLoading(false);
+            toast.error("Login Error",{
+                position: "top-center"
+            });
         }
 
         return false;

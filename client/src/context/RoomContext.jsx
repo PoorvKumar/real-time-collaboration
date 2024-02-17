@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { nanoid } from 'nanoid';
 import { useAuthenticate } from "./AuthContext";
 import { toast } from "react-toastify";
+import { CanvasMode } from "../constants";
 
 const RoomContext=createContext();
 
@@ -19,6 +20,13 @@ export const RoomProvider=({ children, boardId })=>
     const [others,setOthers]=useState([]);
     const [othersPresence,setOthersPresence]=useState([]);
     const [layers,setLayers]=useState([]);
+
+    const addLayer=(layer)=>
+    {
+        setLayers((prev)=>[ ...prev, layer ]);
+    };
+
+    const [canvasState, setCanvasState] = useState({ mode: CanvasMode.None });
 
     const [userId,setUserId]=useState("");
 
@@ -81,7 +89,10 @@ export const RoomProvider=({ children, boardId })=>
         setSelfPresence,
         others,
         othersPresence,
-        layers
+        layers,
+        addLayer,
+        canvasState,
+        setCanvasState
     };
 
     return <RoomContext.Provider value={value}>

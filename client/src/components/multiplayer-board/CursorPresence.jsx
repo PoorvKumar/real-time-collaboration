@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Cursor from './Cursor';
 import { useRoom } from '@/context/RoomContext';
+import Path from './Path';
 
-const CursorPresence = () => {
+const Cursors = () => {
 
     const { socket }=useRoom();
 
@@ -63,6 +64,47 @@ const CursorPresence = () => {
             ))}
         </>
     )
-}
+};
+
+const Drafts=()=>
+{
+    const { socket }=useRoom();
+    const [pencilDrafts,setPencilDrafts]=useState({});
+
+    useEffect(() => {
+        if (!socket) {
+            return;
+        }
+
+        socket.on('updatePencilDraft', data => {
+            const { id, newDraft } = data;
+            setPencilDrafts(prevDrafts => ({
+                ...prevDrafts,
+                [id]: newDraft,
+            }));
+        });
+
+        return () => {
+            socket.off('updatePencilDraft');
+        };
+    }, [socket]);
+
+    return (
+        <>
+            {Object.entries(pencilDrafts).map(([id,draft])=>(
+                <Path key={id} points={draft} fill={none} stroke="black" x={0} y={0} />
+            ))}
+        </>
+    )
+};
+
+const CursorPresence=()=>
+{
+    return (
+        <>
+            <Cursors />
+        </>
+    )
+};
 
 export default CursorPresence;

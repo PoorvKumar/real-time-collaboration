@@ -71,6 +71,12 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("cursorLeave",data);
   });
 
+  socket.on("updatePencilDraft",(data)=>
+  {
+    const roomId=Array.from(socket.rooms)[1];
+    socket.to(roomId).emit("updatePencilDraft",data);
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected", socket.id);
   });
