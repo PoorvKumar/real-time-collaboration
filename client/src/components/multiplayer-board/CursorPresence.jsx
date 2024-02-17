@@ -8,10 +8,10 @@ const CursorPresence = () => {
 
     const [userCursorPositions, setUserCursorPositions] = useState({});
 
-    const updateUserCursorPosition = ({ userId, cursorPosition, camera }) => {
+    const updateUserCursorPosition = ({ userId, cursorPosition }) => {
         setUserCursorPositions((prevUserCursorPositions) => ({
             ...prevUserCursorPositions,
-            [userId]: { position: cursorPosition, camera: camera }
+            [userId]: { position: cursorPosition }
         }));
     };
 
@@ -31,11 +31,10 @@ const CursorPresence = () => {
     return (
         <>
             {/* Render the canvas content here */}
-            {Object.entries(userCursorPositions).map(([userId, { position, camera }]) => (
+            {Object.entries(userCursorPositions).map(([userId, { position }]) => (
                 <Cursor
                     key={userId}
                     position={position}
-                    camera={camera}
                 />
             ))}
         </>

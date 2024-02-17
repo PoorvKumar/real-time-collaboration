@@ -1,12 +1,13 @@
 import React from 'react'
 
-const Cursor = ({ position, camera }) => {
-    // Calculate adjusted cursor position based on camera position
-    const adjustedX = position.x - camera.x;
-    const adjustedY = position.y - camera.y;
+const Cursor = ({ position }) => {
+
+    if (!position) {
+        return null;
+    }
 
     return (
-        <circle cx={adjustedX} cy={adjustedY} r={5} fill="red" />
+        <circle cx={position.x} cy={position.y} r={5} fill="red" />
     );
 };
 

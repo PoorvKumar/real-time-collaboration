@@ -18,7 +18,7 @@ const Canvas = ({ boardId }) => {
     const [camera, setCamera] = useState({ x: 0, y: 0 });
     const [zoomLevel, setZoomLevel] = useState(1);
 
-    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+    const [cursorPosition, setCursorPosition] = useState(null);
     const throttleInterval = 1000; // Throttle interval in milliseconds
     let throttleTimer;
 
@@ -57,7 +57,7 @@ const Canvas = ({ boardId }) => {
 
         const emitCursorPosition = () => {
             // Emit cursor position to the server via WebSocket
-            socket.emit('cursorPosition', { id, cursorPosition, camera });
+            socket.emit('cursorPosition', { id, cursorPosition });
         };
 
         const throttledEmit = () => {
@@ -143,7 +143,7 @@ const Canvas = ({ boardId }) => {
                 >
                     <circle cx="50" cy="50" r="40" fill="blue" />
                     <CursorPresence />
-                    <circle cx={cursorPosition?.x} cy={cursorPosition?.y} r={5} fill="red" />
+                    {cursorPosition && <circle cx={cursorPosition.x} cy={cursorPosition.y} r={5} fill="red" />}
                 </g>
             </svg>
         </main>
