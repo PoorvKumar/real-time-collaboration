@@ -8,11 +8,21 @@ const CursorPresence = () => {
 
     const [userCursorPositions, setUserCursorPositions] = useState({});
 
-    const updateUserCursorPosition = ({ userId, cursorPosition }) => {
+    const updateUserCursorPosition = ({ id, cursorPosition, name }) => {
         setUserCursorPositions((prevUserCursorPositions) => ({
             ...prevUserCursorPositions,
-            [userId]: { position: cursorPosition }
+            [id]: { position: cursorPosition, name }
         }));
+    };
+
+    const removeUserCursorPosition=(id)=>
+    {
+        setUserCursorPositions((prev)=>{
+            const updatedPositions={ ...prev };
+            delete updatedPositions[id];
+
+            return updatedPositions;
+        })   
     };
 
     useEffect(() => {
@@ -23,17 +33,31 @@ const CursorPresence = () => {
         }
 
         socket.on("updateCursorPosition", (data) => {
-            console.log(data);
+            // console.log(data);
             updateUserCursorPosition(data);
         });
-    }, []);
+
+        socket.on("cursorLeave",(data)=>
+        {
+            removeUserCursorPosition(data.id);
+        });
+
+        return ()=>
+        {
+            socket.off("updateCursorPosition");
+            socket.off("cursorLeave");
+        }
+
+    }, [socket]);
 
     return (
         <>
             {/* Render the canvas content here */}
-            {Object.entries(userCursorPositions).map(([userId, { position }]) => (
+            {Object.entries(userCursorPositions).map(([id, { position, name }]) => (
                 <Cursor
-                    key={userId}
+                    key={id}
+                    userId={id}
+                    name={name}
                     position={position}
                 />
             ))}

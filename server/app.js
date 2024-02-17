@@ -65,6 +65,12 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("updateCursorPosition",data);
   });
 
+  socket.on("cursorLeave",(data)=>
+  {
+    const roomId=Array.from(socket.rooms)[1];
+    socket.to(roomId).emit("cursorLeave",data);
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected", socket.id);
   });

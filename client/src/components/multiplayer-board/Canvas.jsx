@@ -5,6 +5,7 @@ import { useAuthenticate } from '@/context/AuthContext';
 import { useSocket } from '@/hooks/useSocket';
 import { useRoom } from '@/context/RoomContext';
 import CursorPresence from './CursorPresence';
+import Cursor from './Cursor';
 
 const Canvas = ({ boardId }) => {
 
@@ -57,7 +58,7 @@ const Canvas = ({ boardId }) => {
 
         const emitCursorPosition = () => {
             // Emit cursor position to the server via WebSocket
-            socket.emit('cursorPosition', { id, cursorPosition });
+            socket.emit('cursorPosition', { id, cursorPosition, name: user.name });
         };
 
         const throttledEmit = () => {
@@ -112,6 +113,7 @@ const Canvas = ({ boardId }) => {
     };
 
     const onPointerLeave = () => {
+        socket.emit("cursorLeave",{ id });
         setCursorPosition(null);
     };
 
@@ -142,8 +144,16 @@ const Canvas = ({ boardId }) => {
                     }}
                 >
                     <circle cx="50" cy="50" r="40" fill="blue" />
+                    
                     <CursorPresence />
-                    {cursorPosition && <circle cx={cursorPosition.x} cy={cursorPosition.y} r={5} fill="red" />}
+                    
+                    {cursorPosition && 
+                    <Cursor
+                        key={id}
+                        userId={id}
+                        name={user.name}
+                        position={cursorPosition}
+                    />}
                 </g>
             </svg>
         </main>

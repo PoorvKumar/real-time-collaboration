@@ -76,6 +76,7 @@ export const RoomProvider=({ children, boardId })=>
 
     const value={
         socket,
+        id: userId,
         selfPresence,
         setSelfPresence,
         others,
