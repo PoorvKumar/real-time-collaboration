@@ -78,6 +78,13 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("updatePencilDraft",data);
   });
 
+  socket.on("updateLayerDraft",(data)=>
+  {
+    const roomId=Array.from(socket.rooms)[1];
+    // console.log("updateDraft",socket.id,data);
+    socket.to(roomId).emit("updateLayerDraft",data);
+  });
+
   socket.on("newLayer",(data)=>
   {
     const roomId=Array.from(socket.rooms)[1];

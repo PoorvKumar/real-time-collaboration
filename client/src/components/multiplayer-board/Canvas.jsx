@@ -40,6 +40,11 @@ const Canvas = ({ boardId }) => {
     //Grabbing and Panning
     const [lastPointerPosition, setLastPointerPosition] = useState({ x: 0, y: 0 });
 
+    //Inserting Layer
+    const [startPosition,setStartPosition]=useState(null);
+    const [endPosition,setEndPosition]=useState(null);
+    const [layerDraft,setLayerDraft]=useState(null);
+
     const svgRef = useRef(null);
 
     useEffect(() => {
@@ -125,7 +130,9 @@ const Canvas = ({ boardId }) => {
 
     useEffect(() => {
         const handlePointerMove = (e) => {
+            
             throttledEmit('cursorPosition', { id, cursorPosition, name: user.name });
+            
             if (canvasState.mode === CanvasMode.Pencil && isDrawing) {
                 setPencilDraft((prev) => {
                     const newDraft = [...prev, { ...cursorPosition, pressure: e.pressure }];
@@ -133,27 +140,74 @@ const Canvas = ({ boardId }) => {
                     throttledEmit('updatePencilDraft', { id, newDraft });
                     return newDraft;
                 });
+                return ;
+            }
+
+            if(canvasState.mode===CanvasMode.Inserting && startPosition)
+            {
+                setEndPosition(cursorPosition);
+
+                setLayerDraft((prevDraft)=>({
+                    ...prevDraft,
+                    points: [startPosition,endPosition]
+                }));
+
+                throttledEmit('updateLayerDraft',{ id, type: canvasState.layerType, startPosition, endPosition: cursorPosition });
+                return ;
             }
         };
 
         const handlePointerUp = (e) => {
+
+            let newLayer;
+
             if (canvasState.mode === CanvasMode.Pencil && isDrawing) {
-                const newLayer = {
+                newLayer = {
                     id: nanoid(),
                     type: LayerType.Path,
                     points: pencilDraft,
                     color: "black",
                 };
 
-                console.log(pencilDraft);
+                // console.log(pencilDraft);
 
-                addLayer(newLayer);
+                // addLayer(newLayer);
 
-                //websocket emit event
-                throttledEmit("newLayer", newLayer);
+                // //websocket emit event
+                // throttledEmit("newLayer", newLayer);
 
                 setPencilDraft([]);
                 setIsDrawing(false);
+            }
+
+            if(canvasState.mode===CanvasMode.Inserting && startPosition)
+            {
+                if(!endPosition)
+                {
+                    setEndPosition(cursorPosition);
+                }
+
+                newLayer={
+                    id: nanoid(),
+                    type: canvasState.layerType,
+                    points: [ startPosition, cursorPosition ],
+                    color: "black",
+                    x: startPosition.x,
+                    y: startPosition.y
+                };
+
+                // addLayer(newLayer);
+
+                setStartPosition(null);
+                setEndPosition(null);
+                setLayerDraft(null);
+            }
+
+            if(newLayer)
+            {
+                addLayer(newLayer);
+                // console.log(newLayer);
+                throttledEmit("newLayer", newLayer);
             }
         }
 
@@ -165,7 +219,7 @@ const Canvas = ({ boardId }) => {
             svgElement.removeEventListener('pointermove', handlePointerMove);
             svgElement.removeEventListener('pointerup', handlePointerUp);
         };
-    }, [canvasState.mode, cursorPosition, isDrawing, setPencilDraft]);
+    }, [canvasState.mode, cursorPosition, isDrawing, setPencilDraft,throttledEmit,endPosition]);
 
     const onPointerLeave = () => {
 
@@ -176,6 +230,13 @@ const Canvas = ({ boardId }) => {
             //TODO: When pointer leaves while drawing the draft remains until new draft is created
         }
 
+        if(canvasState.mode===CanvasMode.Inserting && startPosition)
+        {
+            setStartPosition(null);
+            setEndPosition(null);
+            setLayerDraft(null);
+        }
+
         socket.emit("cursorLeave", { id });
         setCursorPosition(null);
     };
@@ -183,6 +244,14 @@ const Canvas = ({ boardId }) => {
     const onPointerDown = useCallback((e) => {
 
         if (canvasState.mode === CanvasMode.Inserting) {
+            setStartPosition(cursorPosition);
+            setEndPosition(cursorPosition);
+            setLayerDraft({
+                type: canvasState.layerType,
+                x: cursorPosition.x,
+                y: cursorPosition.y,
+                points: [cursorPosition,cursorPosition]
+            });
             return;
         }
 
@@ -267,6 +336,9 @@ const Canvas = ({ boardId }) => {
                             x={0}
                             y={0}
                         />
+                    )}
+                    {layerDraft && (
+                        <LayerPreview layer={layerDraft} />
                     )}
                 </g>
             </svg>
