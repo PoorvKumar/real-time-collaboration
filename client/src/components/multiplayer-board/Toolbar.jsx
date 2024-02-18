@@ -1,6 +1,6 @@
 import React from 'react';
 import ToolButton from './ToolButton';
-import { Circle, Hand, MousePointer2, Pencil, Square, Type } from 'lucide-react';
+import { Circle, Hand, MousePointer2, MoveUpRight, Pencil, Slash, Square, Type } from 'lucide-react';
 import { CanvasMode } from '@/constants';
 import { LayerType } from '@/constants';
 
@@ -81,6 +81,30 @@ const Toolbar = ({ canvasState, setCanvasState }) => {
                     })}
                     isActive={
                         canvasState.mode === CanvasMode.Pencil
+                    }
+                />
+                <ToolButton
+                    label="Arrow"
+                    Icon={MoveUpRight}
+                    onClick={() => setCanvasState({
+                        mode: CanvasMode.Inserting,
+                        layerType: LayerType.Arrow
+                    })}
+                    isActive={
+                        canvasState.mode === CanvasMode.Inserting &&
+                        canvasState.layerType === LayerType.Arrow
+                    }
+                />
+                <ToolButton
+                    label="Line"
+                    Icon={Slash}
+                    onClick={() => setCanvasState({
+                        mode: CanvasMode.Inserting,
+                        layerType: LayerType.Line
+                    })}
+                    isActive={
+                        canvasState.mode === CanvasMode.Inserting &&
+                        canvasState.layerType === LayerType.Line
                     }
                 />
             </div>

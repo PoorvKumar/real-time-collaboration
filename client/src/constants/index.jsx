@@ -14,6 +14,8 @@ export const LayerType={
     Ellipse: "Ellipse",
     Path: "Path",
     Text: "Text",
+    Arrow: "Arrow",
+    Line: "Line",
     Note: "Note",
     Image: "Image",
     Code: "Code",

@@ -93,7 +93,7 @@ const LayerPreview = memo(({ layer }) => {
                 <line
                     className='drop-shadow-md'
                     style={{
-                        transform: `translate(${layer.x}px,${layer.y}px)`
+                        transform: `translate(${layerData.x}px,${layerData.y}px)`
                     }}
                     x1={layerData.x1}
                     y1={layerData.y1}
@@ -102,6 +102,7 @@ const LayerPreview = memo(({ layer }) => {
                     x={0}
                     y={0}
                     strokeWidth={1}
+                    stroke='#000'
                 />
             );
         default:
