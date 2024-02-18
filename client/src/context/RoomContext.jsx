@@ -79,8 +79,21 @@ export const RoomProvider=({ children, boardId })=>
 
     useEffect(()=>
     {
+        if(!socket)
+        {
+            return ;
+        }
 
-    },[]);
+        socket.on("newLayer",(data)=>
+        {
+            addLayer(data);
+        });
+
+        return ()=>
+        {
+            socket.off("newLayer");
+        };
+    },[socket,boardId]);
 
     const value={
         socket,

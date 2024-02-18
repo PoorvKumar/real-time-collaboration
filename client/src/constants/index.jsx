@@ -6,7 +6,8 @@ export const CanvasMode = {
     Inserting: "Inserting",
     Resizing: "Resizing",
     Pencil: "Pencil",
-    Panning: "Panning"
+    Hand: "Hand",
+    Grabbing: "Grabbing"
 };
 
 export const LayerType={

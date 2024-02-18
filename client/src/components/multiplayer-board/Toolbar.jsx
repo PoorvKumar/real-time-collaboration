@@ -30,11 +30,11 @@ const Toolbar = ({ canvasState, setCanvasState }) => {
                     onClick={()=>
                     {
                         setCanvasState({
-                            mode: CanvasMode.Panning
+                            mode: CanvasMode.Hand
                         });
                     }}
                     isActive={
-                        canvasState.mode === CanvasMode.Panning
+                        canvasState.mode === CanvasMode.Hand || canvasState.mode===CanvasMode.Grabbing
                     }
                 />
                 <ToolButton

@@ -73,6 +73,7 @@ const Drafts=()=>
 
     useEffect(() => {
         if (!socket) {
+            console.log(socket);
             return;
         }
 
@@ -92,7 +93,7 @@ const Drafts=()=>
     return (
         <>
             {Object.entries(pencilDrafts).map(([id,draft])=>(
-                <Path key={id} points={draft} fill={none} stroke="black" x={0} y={0} />
+                <Path key={id} points={draft} fill="black" x={0} y={0} />
             ))}
         </>
     )
@@ -102,6 +103,7 @@ const CursorPresence=()=>
 {
     return (
         <>
+            <Drafts />
             <Cursors />
         </>
     )

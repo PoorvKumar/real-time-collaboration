@@ -9,6 +9,8 @@ import Cursor from './Cursor';
 import Toolbar from './Toolbar';
 import Path from './Path';
 import LayerPreview from './LayerPreview';
+import { useThrottledEmit } from '@/hooks/useThrottledEmit';
+import { nanoid } from 'nanoid';
 
 const Canvas = ({ boardId }) => {
 
@@ -24,9 +26,8 @@ const Canvas = ({ boardId }) => {
     const [zoomLevel, setZoomLevel] = useState(1);
 
     const [cursorPosition, setCursorPosition] = useState(null);
-    const throttleInterval = 1000; // Throttle interval in milliseconds
-    let throttleTimer;
-
+    const throttledEmit=useThrottledEmit(socket);
+    
     const [grid, setGrid] = useState({
         enable: false,
         isSquare: false,
@@ -53,19 +54,6 @@ const Canvas = ({ boardId }) => {
         console.log("canvasState", canvasState);
     }, [camera, canvasState]);
 
-    // websocket throttling to avoid overload the sockets
-    const throttledEmit=(eventName,data)=>
-    {
-        if(!throttleTimer)
-        {
-            socket.emit(eventName,data); //websocket emits the event eventName with data data
-            throttleTimer=setTimeout(()=> //throttleTimer no longer null until the throttleInterval, after which it will call the callback() function to assign it null;
-            {
-                throttleTimer=null;
-            },throttleInterval);
-        }
-    };
-
     useEffect(() => {
         const handleMouseMove = (e) => {
             const { clientX, clientY } = e;
@@ -74,8 +62,8 @@ const Canvas = ({ boardId }) => {
             const adjustedY = (clientY - camera.y) / zoomLevel;
             setCursorPosition({ x: adjustedX, y: adjustedY });
 
-            //throttle websocket emitting cursor position
-            throttledEmit('cursorPosition',{ id, cursorPosition: { x: adjustedX, y: adjustedY }, name: user.name });
+            // throttledEmit('cursorPosition',{ id, cursorPosition: { x: adjustedX, y: adjustedY }, name: user.name });
+            socket.emit('cursorPosition',{ id, cursorPosition: { x: adjustedX, y: adjustedY }, name: user.name });
         };
 
         const svgElement = svgRef.current;
@@ -83,10 +71,9 @@ const Canvas = ({ boardId }) => {
             svgElement.addEventListener('mousemove', handleMouseMove);
             return () => {
                 svgElement.removeEventListener('mousemove', handleMouseMove);
-                clearInterval(throttleTimer);
             };
         }
-    }, [camera, cursorPosition, socket, throttleInterval, zoomLevel]);
+    }, [camera, cursorPosition, socket, zoomLevel, throttledEmit]);
 
 
     const onWheel = useCallback((e) => {
@@ -128,9 +115,8 @@ const Canvas = ({ boardId }) => {
             if(canvasState.mode===CanvasMode.Pencil && isDrawing)
             {
                 setPencilDraft((prev)=>{
-                    const newDraft=[ ...prev, cursorPosition];
+                    const newDraft=[ ...prev, { ...cursorPosition, pressure: e.pressure }];
 
-                    
                     throttledEmit('updatePencilDraft',{ id, newDraft });
                     return newDraft;
                 });
@@ -142,14 +128,18 @@ const Canvas = ({ boardId }) => {
             if(canvasState.mode===CanvasMode.Pencil && isDrawing)
             {
                 const newLayer={
+                    id: nanoid(),
                     type: LayerType.Path,
                     points: pencilDraft,
                     color: "black",
                 };
 
+                console.log(pencilDraft);
+
                 addLayer(newLayer);
 
                 //websocket emit event
+                throttledEmit("newLayer",newLayer);
 
                 setPencilDraft([]);
                 setIsDrawing(false);
@@ -173,6 +163,8 @@ const Canvas = ({ boardId }) => {
         {
             setPencilDraft([]);
             setIsDrawing(false);
+
+            //TODO: When pointer leaves while drawing the draft remains until new draft is created
         }
 
         socket.emit("cursorLeave", { id });
@@ -202,7 +194,7 @@ const Canvas = ({ boardId }) => {
             case CanvasMode.Inserting:
             case CanvasMode.Pencil:
                 return 'crosshair'; // Set cursor to crosshair for inserting and pencil modes
-            case CanvasMode.Panning:
+            case CanvasMode.Hand:
                 return 'grab';
             default:
                 return 'auto'; // Set cursor to default for other modes
@@ -219,10 +211,10 @@ const Canvas = ({ boardId }) => {
                 ref={svgRef}
                 className='h-[100vh] w-[100vw]'
                 onWheel={onWheel}
-                onPointerMove={onPointerMove}
+                // onPointerMove={onPointerMove}
                 onPointerLeave={onPointerLeave}
                 onPointerDown={onPointerDown}
-                onPointerUp={onPointerUp}
+                // onPointerUp={onPointerUp}
             >
                 <GridBackground grid={grid} camera={camera} zoomLevel={zoomLevel} />
 
