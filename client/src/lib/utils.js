@@ -33,23 +33,6 @@ export const getLayerData=(type,startPosition,endPosition)=>
   }
 };
 
-export const getArrowHeadPath=(x1,y1,x2,y2,arrowLength=10,arrowAngle=Math.PI/6)=>
-{
-  // Calculate the angle of the line
-  const angle = Math.atan2(y2 - y1, x2 - x1);
-
-  // Calculate the points for the arrowhead
-  const x3 = x2 - arrowLength * Math.cos(angle - arrowAngle);
-  const y3 = y2 - arrowLength * Math.sin(angle - arrowAngle);
-  const x4 = x2 - arrowLength * Math.cos(angle + arrowAngle);
-  const y4 = y2 - arrowLength * Math.sin(angle + arrowAngle);
-
-  // Construct the SVG path string
-  const path = `M ${x1},${y1} L ${x2},${y2} L ${x3},${y3} L ${x2},${y2} L ${x4},${y4} Z`;
-
-  return path;
-}
-
 export function getSvgPathFromStroke(stroke)
 {
   if (!stroke.length) return "";

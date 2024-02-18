@@ -21,9 +21,38 @@ export const RoomProvider=({ children, boardId })=>
     const [othersPresence,setOthersPresence]=useState([]);
     const [layers,setLayers]=useState([]);
 
-    const addLayer=(layer)=>
+    const [undoStack,setUndoStack]=useState([]);
+    const [redoStack,setRedoStack]=useState([]);
+
+    const addLayer=(newLayer)=>
     {
-        setLayers((prev)=>[ ...prev, layer ]);
+        setLayers((prev)=>[ ...prev, newLayer ]);
+        setUndoStack((prev)=>[ ...prev, layers ]);
+        setRedoStack([]);
+    };
+
+    //Function to undo an action
+    const undo=()=>
+    {
+        if(undoStack.length===0)
+        {
+            return ;
+        }
+        const prevState=undoStack.pop();
+        setLayers(prevState);
+        setRedoStack((prevStack)=>[ ...prevStack, layers ]);
+    }
+
+    //Function to redo an action
+    const redo=()=>
+    {
+        if(redoStack.length===0)
+        {
+            return ;
+        }
+        const nextStack=redoStack.pop();
+        setLayers(nextStack);
+        setUndoStack((prevStack)=>[ ...prevStack, layers ]);
     };
 
     const [canvasState, setCanvasState] = useState({ mode: CanvasMode.None });
@@ -105,7 +134,11 @@ export const RoomProvider=({ children, boardId })=>
         layers,
         addLayer,
         canvasState,
-        setCanvasState
+        setCanvasState,
+        undo,
+        redo,
+        canUndo: undoStack.length>0,
+        canRedo: redoStack.length>0
     };
 
     return <RoomContext.Provider value={value}>

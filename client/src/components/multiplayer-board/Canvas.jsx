@@ -41,9 +41,9 @@ const Canvas = ({ boardId }) => {
     const [lastPointerPosition, setLastPointerPosition] = useState({ x: 0, y: 0 });
 
     //Inserting Layer
-    const [startPosition,setStartPosition]=useState(null);
-    const [endPosition,setEndPosition]=useState(null);
-    const [layerDraft,setLayerDraft]=useState(null);
+    const [startPosition, setStartPosition] = useState(null);
+    const [endPosition, setEndPosition] = useState(null);
+    const [layerDraft, setLayerDraft] = useState(null);
 
     const svgRef = useRef(null);
 
@@ -111,15 +111,13 @@ const Canvas = ({ boardId }) => {
 
     }, [zoomLevel]);
 
-    const onPointerMove=(e)=>
-    {
-        if(canvasState.mode===CanvasMode.Translating)
-        {
+    const onPointerMove = (e) => {
+        if (canvasState.mode === CanvasMode.Translating) {
             e.preventDefault();
-            const deltaX=(e.clientX-lastPointerPosition.x)/zoomLevel;
-            const deltaY=(e.clientY-lastPointerPosition.y)/zoomLevel;
+            const deltaX = (e.clientX - lastPointerPosition.x) / zoomLevel;
+            const deltaY = (e.clientY - lastPointerPosition.y) / zoomLevel;
 
-            setCamera((prevCamera)=>({
+            setCamera((prevCamera) => ({
                 x: prevCamera.x + deltaX,
                 y: prevCamera.y + deltaY
             }));
@@ -130,9 +128,9 @@ const Canvas = ({ boardId }) => {
 
     useEffect(() => {
         const handlePointerMove = (e) => {
-            
+
             throttledEmit('cursorPosition', { id, cursorPosition, name: user.name });
-            
+
             if (canvasState.mode === CanvasMode.Pencil && isDrawing) {
                 setPencilDraft((prev) => {
                     const newDraft = [...prev, { ...cursorPosition, pressure: e.pressure }];
@@ -140,20 +138,19 @@ const Canvas = ({ boardId }) => {
                     throttledEmit('updatePencilDraft', { id, newDraft });
                     return newDraft;
                 });
-                return ;
+                return;
             }
 
-            if(canvasState.mode===CanvasMode.Inserting && startPosition)
-            {
+            if (canvasState.mode === CanvasMode.Inserting && startPosition) {
                 setEndPosition(cursorPosition);
 
-                setLayerDraft((prevDraft)=>({
+                setLayerDraft((prevDraft) => ({
                     ...prevDraft,
-                    points: [startPosition,endPosition]
+                    points: [startPosition, endPosition]
                 }));
 
-                throttledEmit('updateLayerDraft',{ id, type: canvasState.layerType, startPosition, endPosition: cursorPosition });
-                return ;
+                throttledEmit('updateLayerDraft', { id, type: canvasState.layerType, startPosition, endPosition: cursorPosition });
+                return;
             }
         };
 
@@ -180,17 +177,15 @@ const Canvas = ({ boardId }) => {
                 setIsDrawing(false);
             }
 
-            if(canvasState.mode===CanvasMode.Inserting && startPosition)
-            {
-                if(!endPosition)
-                {
+            if (canvasState.mode === CanvasMode.Inserting && startPosition) {
+                if (!endPosition) {
                     setEndPosition(cursorPosition);
                 }
 
-                newLayer={
+                newLayer = {
                     id: nanoid(),
                     type: canvasState.layerType,
-                    points: [ startPosition, cursorPosition ],
+                    points: [startPosition, cursorPosition],
                     color: "black",
                     x: startPosition.x,
                     y: startPosition.y
@@ -203,8 +198,7 @@ const Canvas = ({ boardId }) => {
                 setLayerDraft(null);
             }
 
-            if(newLayer)
-            {
+            if (newLayer) {
                 addLayer(newLayer);
                 // console.log(newLayer);
                 throttledEmit("newLayer", newLayer);
@@ -219,7 +213,7 @@ const Canvas = ({ boardId }) => {
             svgElement.removeEventListener('pointermove', handlePointerMove);
             svgElement.removeEventListener('pointerup', handlePointerUp);
         };
-    }, [canvasState.mode, cursorPosition, isDrawing, setPencilDraft,throttledEmit,endPosition]);
+    }, [canvasState.mode, cursorPosition, isDrawing, setPencilDraft, throttledEmit, endPosition]);
 
     const onPointerLeave = () => {
 
@@ -230,8 +224,7 @@ const Canvas = ({ boardId }) => {
             //TODO: When pointer leaves while drawing the draft remains until new draft is created
         }
 
-        if(canvasState.mode===CanvasMode.Inserting && startPosition)
-        {
+        if (canvasState.mode === CanvasMode.Inserting && startPosition) {
             setStartPosition(null);
             setEndPosition(null);
             setLayerDraft(null);
@@ -242,6 +235,10 @@ const Canvas = ({ boardId }) => {
     };
 
     const onPointerDown = useCallback((e) => {
+        if (canvasState.mode === CanvasMode.Inserting && canvasState.layerType === LayerType.Text) {
+            setStartPosition(cursorPosition);
+            return;
+        }
 
         if (canvasState.mode === CanvasMode.Inserting) {
             setStartPosition(cursorPosition);
@@ -250,7 +247,7 @@ const Canvas = ({ boardId }) => {
                 type: canvasState.layerType,
                 x: cursorPosition.x,
                 y: cursorPosition.y,
-                points: [cursorPosition,cursorPosition]
+                points: [cursorPosition, cursorPosition]
             });
             return;
         }
@@ -260,20 +257,31 @@ const Canvas = ({ boardId }) => {
             return;
         }
 
-        if (canvasState.mode === CanvasMode.Hand) {
+        if (e.button===1 || canvasState.mode === CanvasMode.Hand) {
             setCanvasState({ ...canvasState, mode: CanvasMode.Translating });
             setLastPointerPosition({ x: e.clientX, y: e.clientY });
-            return ;
+            return;
         }
 
         setCanvasState({ origin: cursorPosition, mode: CanvasMode.Pressing });
     }, [canvasState.mode, cursorPosition, setCanvasState, setPencilDraft]);
 
-    const onPointerUp=()=>
-    {
-        if(canvasState.mode===CanvasMode.Translating)
-        {
+    const onPointerUp = () => {
+        if (canvasState.mode === CanvasMode.Translating || e.button===1) {
             setCanvasState({ ...canvasState, mode: CanvasMode.Hand });
+        }
+
+        if (canvasState.mode === CanvasMode.Inserting && canvasState.layerType === LayerType.Text) {
+            const newTextLayer = {
+                id: nanoid(),
+                type: LayerType.Text,
+                position: startPosition,
+                content: textContent
+            };
+
+            socket.emit("newLayer", newTextLayer);
+
+            addLayer(newTextLayer);
         }
     };
 

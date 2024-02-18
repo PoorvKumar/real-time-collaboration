@@ -2,7 +2,6 @@ import { LayerType } from '@/constants';
 import React, { memo } from 'react'
 import Path from './Path';
 import { getLayerData } from '@/lib/utils';
-import { getArrowHeadPath } from '@/lib/utils';
 
 const LayerPreview = memo(({ layer }) => {
 
@@ -40,6 +39,8 @@ const LayerPreview = memo(({ layer }) => {
                     fill='transparent'
                     strokeWidth={1}
                     stroke='#000'
+                    rx={10}
+                    ry={10}
                 />
             );
         case LayerType.Ellipse:
@@ -61,6 +62,7 @@ const LayerPreview = memo(({ layer }) => {
                 />
             );
         case LayerType.Arrow:
+            const uniqueId = `arrowhead-${Date.now()}`; // Generating unique ID for the arrowhead
             return (
                 <>
                     <line
@@ -74,18 +76,23 @@ const LayerPreview = memo(({ layer }) => {
                         y2={layerData.y2}
                         x={0}
                         y={0}
-                        strokeWidth={1}
+                        strokeWidth={1.5}
+                        stroke='#000'
+                        markerEnd={`url(#${uniqueId})`} // Referencing the arrowhead marker
                     />
-                    <path
-                        className='drop-shadow-md'
-                        style={{
-                            transform: `translate(${layerData.x}px,${layerData.y}px)`
-                        }}
-                        d={getArrowHeadPath(layerData.x1, layerData.y1, layerData.x2, layerData.y2)}
-                        x={0}
-                        y={0}
-                        strokeWidth={1}
-                    />
+                    <defs>
+                        <marker
+                            id={uniqueId} // Using unique ID for the marker
+                            markerWidth="15"
+                            markerHeight="15"
+                            refX="10"
+                            refY="3"
+                            orient="auto"
+                            markerUnits="strokeWidth"
+                        >
+                            <path d="M0,0 L10,3 L0,6 L3,3 z" fill="#000" />
+                        </marker>
+                    </defs>
                 </>
             );
         case LayerType.Line:
@@ -101,7 +108,7 @@ const LayerPreview = memo(({ layer }) => {
                     y2={layerData.y2}
                     x={0}
                     y={0}
-                    strokeWidth={1}
+                    strokeWidth={1.5}
                     stroke='#000'
                 />
             );

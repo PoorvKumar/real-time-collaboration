@@ -1,10 +1,14 @@
 import React from 'react';
 import ToolButton from './ToolButton';
-import { Circle, Hand, MousePointer2, MoveUpRight, Pencil, Slash, Square, Type } from 'lucide-react';
+import { Circle, Hand, MousePointer2, MoveUpRight, Pencil, Redo2, Slash, Square, Type, Undo2 } from 'lucide-react';
 import { CanvasMode } from '@/constants';
 import { LayerType } from '@/constants';
+import { useRoom } from '@/context/RoomContext';
 
 const Toolbar = ({ canvasState, setCanvasState }) => {
+
+    const { undo, redo, canUndo, canRedo }=useRoom();
+
     return (
         <div className='absolute top-[40%] -translate-y-[40%] left-4 flex flex-col gap-y-4'>
             <div className='bg-white rounded-md p-1.5 flex flex-col gap-y-1 items-center shadow-md'>
@@ -38,18 +42,6 @@ const Toolbar = ({ canvasState, setCanvasState }) => {
                     }
                 />
                 <ToolButton
-                    label="Text"
-                    Icon={Type}
-                    onClick={() => setCanvasState({
-                        mode: CanvasMode.Inserting,
-                        layerType: LayerType.Text,
-                    })}
-                    isActive={
-                        canvasState.mode === CanvasMode.Inserting &&
-                        canvasState.layerType === LayerType.Text
-                    }
-                />
-                <ToolButton
                     label="Rectangle"
                     Icon={Square}
                     onClick={() => setCanvasState({
@@ -71,16 +63,6 @@ const Toolbar = ({ canvasState, setCanvasState }) => {
                     isActive={
                         canvasState.mode === CanvasMode.Inserting &&
                         canvasState.layerType === LayerType.Ellipse
-                    }
-                />
-                <ToolButton
-                    label="Pen"
-                    Icon={Pencil}
-                    onClick={() => setCanvasState({
-                        mode: CanvasMode.Pencil,
-                    })}
-                    isActive={
-                        canvasState.mode === CanvasMode.Pencil
                     }
                 />
                 <ToolButton
@@ -106,6 +88,42 @@ const Toolbar = ({ canvasState, setCanvasState }) => {
                         canvasState.mode === CanvasMode.Inserting &&
                         canvasState.layerType === LayerType.Line
                     }
+                />
+                <ToolButton
+                    label="Pen"
+                    Icon={Pencil}
+                    onClick={() => setCanvasState({
+                        mode: CanvasMode.Pencil,
+                    })}
+                    isActive={
+                        canvasState.mode === CanvasMode.Pencil
+                    }
+                />
+                <ToolButton
+                    label="Text"
+                    Icon={Type}
+                    onClick={() => setCanvasState({
+                        mode: CanvasMode.Inserting,
+                        layerType: LayerType.Text,
+                    })}
+                    isActive={
+                        canvasState.mode === CanvasMode.Inserting &&
+                        canvasState.layerType === LayerType.Text
+                    }
+                />
+            </div>
+            <div className='bg-white rounded-md p-1.5 flex flex-col items-center shadow-md'>
+                <ToolButton 
+                    label="Undo"
+                    Icon={Undo2}
+                    onClick={undo} 
+                    isDisabled={!canUndo}
+                />
+                <ToolButton 
+                    label="Redo"
+                    Icon={Redo2}
+                    onClick={redo}
+                    isDisabled={!canRedo}
                 />
             </div>
         </div>
