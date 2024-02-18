@@ -26,16 +26,19 @@ const Canvas = ({ boardId }) => {
     const [zoomLevel, setZoomLevel] = useState(1);
 
     const [cursorPosition, setCursorPosition] = useState(null);
-    const throttledEmit=useThrottledEmit(socket);
-    
+    const throttledEmit = useThrottledEmit(socket);
+
     const [grid, setGrid] = useState({
         enable: false,
         isSquare: false,
     });
 
     // Pencil Drawing
-    const [pencilDraft,setPencilDraft]=useState([]);
+    const [pencilDraft, setPencilDraft] = useState([]);
     const [isDrawing, setIsDrawing] = useState(false);
+
+    //Grabbing and Panning
+    const [lastPointerPosition, setLastPointerPosition] = useState({ x: 0, y: 0 });
 
     const svgRef = useRef(null);
 
@@ -63,7 +66,7 @@ const Canvas = ({ boardId }) => {
             setCursorPosition({ x: adjustedX, y: adjustedY });
 
             // throttledEmit('cursorPosition',{ id, cursorPosition: { x: adjustedX, y: adjustedY }, name: user.name });
-            socket.emit('cursorPosition',{ id, cursorPosition: { x: adjustedX, y: adjustedY }, name: user.name });
+            socket.emit('cursorPosition', { id, cursorPosition: { x: adjustedX, y: adjustedY }, name: user.name });
         };
 
         const svgElement = svgRef.current;
@@ -103,31 +106,39 @@ const Canvas = ({ boardId }) => {
 
     }, [zoomLevel]);
 
-    const onPointerMove = () => {
-        
+    const onPointerMove=(e)=>
+    {
+        if(canvasState.mode===CanvasMode.Translating)
+        {
+            e.preventDefault();
+            const deltaX=(e.clientX-lastPointerPosition.x)/zoomLevel;
+            const deltaY=(e.clientY-lastPointerPosition.y)/zoomLevel;
+
+            setCamera((prevCamera)=>({
+                x: prevCamera.x + deltaX,
+                y: prevCamera.y + deltaY
+            }));
+
+            setLastPointerPosition({ x: e.clientX, y: e.clientY });
+        }
     };
 
-    useEffect(()=>
-    {
-        const handlePointerMove=(e)=>
-        {
-            throttledEmit('cursorPosition',{ id, cursorPosition, name: user.name });
-            if(canvasState.mode===CanvasMode.Pencil && isDrawing)
-            {
-                setPencilDraft((prev)=>{
-                    const newDraft=[ ...prev, { ...cursorPosition, pressure: e.pressure }];
+    useEffect(() => {
+        const handlePointerMove = (e) => {
+            throttledEmit('cursorPosition', { id, cursorPosition, name: user.name });
+            if (canvasState.mode === CanvasMode.Pencil && isDrawing) {
+                setPencilDraft((prev) => {
+                    const newDraft = [...prev, { ...cursorPosition, pressure: e.pressure }];
 
-                    throttledEmit('updatePencilDraft',{ id, newDraft });
+                    throttledEmit('updatePencilDraft', { id, newDraft });
                     return newDraft;
                 });
             }
         };
 
-        const handlePointerUp=(e)=>
-        {
-            if(canvasState.mode===CanvasMode.Pencil && isDrawing)
-            {
-                const newLayer={
+        const handlePointerUp = (e) => {
+            if (canvasState.mode === CanvasMode.Pencil && isDrawing) {
+                const newLayer = {
                     id: nanoid(),
                     type: LayerType.Path,
                     points: pencilDraft,
@@ -139,28 +150,26 @@ const Canvas = ({ boardId }) => {
                 addLayer(newLayer);
 
                 //websocket emit event
-                throttledEmit("newLayer",newLayer);
+                throttledEmit("newLayer", newLayer);
 
                 setPencilDraft([]);
                 setIsDrawing(false);
             }
         }
 
-        const svgElement=svgRef.current;
-        svgElement.addEventListener('pointermove',handlePointerMove);
-        svgElement.addEventListener('pointerup',handlePointerUp);
+        const svgElement = svgRef.current;
+        svgElement.addEventListener('pointermove', handlePointerMove);
+        svgElement.addEventListener('pointerup', handlePointerUp);
 
-        return ()=>
-        {
-            svgElement.removeEventListener('pointermove',handlePointerMove);
-            svgElement.removeEventListener('pointerup',handlePointerUp);
+        return () => {
+            svgElement.removeEventListener('pointermove', handlePointerMove);
+            svgElement.removeEventListener('pointerup', handlePointerUp);
         };
-    },[canvasState.mode, cursorPosition, isDrawing, setPencilDraft ]);
+    }, [canvasState.mode, cursorPosition, isDrawing, setPencilDraft]);
 
     const onPointerLeave = () => {
 
-        if(canvasState.mode===CanvasMode.Pencil && isDrawing)
-        {
+        if (canvasState.mode === CanvasMode.Pencil && isDrawing) {
             setPencilDraft([]);
             setIsDrawing(false);
 
@@ -179,14 +188,24 @@ const Canvas = ({ boardId }) => {
 
         if (canvasState.mode === CanvasMode.Pencil) {
             setIsDrawing(true);
+            return;
+        }
+
+        if (canvasState.mode === CanvasMode.Hand) {
+            setCanvasState({ ...canvasState, mode: CanvasMode.Translating });
+            setLastPointerPosition({ x: e.clientX, y: e.clientY });
             return ;
         }
 
         setCanvasState({ origin: cursorPosition, mode: CanvasMode.Pressing });
     }, [canvasState.mode, cursorPosition, setCanvasState, setPencilDraft]);
 
-    const onPointerUp = () => {
-
+    const onPointerUp=()=>
+    {
+        if(canvasState.mode===CanvasMode.Translating)
+        {
+            setCanvasState({ ...canvasState, mode: CanvasMode.Hand });
+        }
     };
 
     const getCursorStyle = () => {
@@ -196,6 +215,8 @@ const Canvas = ({ boardId }) => {
                 return 'crosshair'; // Set cursor to crosshair for inserting and pencil modes
             case CanvasMode.Hand:
                 return 'grab';
+            case CanvasMode.Translating:
+                return 'grabbing';
             default:
                 return 'auto'; // Set cursor to default for other modes
         }
@@ -211,10 +232,10 @@ const Canvas = ({ boardId }) => {
                 ref={svgRef}
                 className='h-[100vh] w-[100vw]'
                 onWheel={onWheel}
-                // onPointerMove={onPointerMove}
+                onPointerMove={onPointerMove}
                 onPointerLeave={onPointerLeave}
                 onPointerDown={onPointerDown}
-                // onPointerUp={onPointerUp}
+                onPointerUp={onPointerUp}
             >
                 <GridBackground grid={grid} camera={camera} zoomLevel={zoomLevel} />
 
@@ -224,7 +245,7 @@ const Canvas = ({ boardId }) => {
                     }}
                 >
 
-                    {layers && layers.map((layer)=>(
+                    {layers && layers.map((layer) => (
                         <LayerPreview layer={layer} />
                     ))}
 
@@ -239,9 +260,9 @@ const Canvas = ({ boardId }) => {
                         name={user.name}
                         position={cursorPosition}
                     />} */}
-                    {pencilDraft!=null && pencilDraft.length>0 && (
-                        <Path 
-                            points={pencilDraft} 
+                    {pencilDraft != null && pencilDraft.length > 0 && (
+                        <Path
+                            points={pencilDraft}
                             fill="black"
                             x={0}
                             y={0}
