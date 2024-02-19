@@ -2,26 +2,15 @@ import React, { useRef, useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { useSocket } from '@/hooks/useSocket';
 
-const calculateFontSize = (width, height) => {
-    const maxFontSize = 96;
-    const scaleFactor = 0.5;
-    const fontSizeBasedOnHeight = height * scaleFactor;
-    const fontSizeBasedOnWidth = width * scaleFactor;
-
-    return Math.min(
-        fontSizeBasedOnHeight,
-        fontSizeBasedOnWidth,
-        maxFontSize
-    );
-};
-
-const Text = ({ id, x, y, value, width, height }) => {
+const Text = ({ id, x, y, value, fontSize }) => {
 
     const socket=useSocket();
-
     const textRef=useRef(null);
 
     const [textVal,setTextVal]=useState("text");
+
+    const width = fontSize * textVal.length + 24;
+    const height = fontSize * 2;
 
     const handleContentChange=(e)=>
     {
@@ -34,17 +23,17 @@ const Text = ({ id, x, y, value, width, height }) => {
     <foreignObject
         x={x}
         y={y}
-        width={50*textVal.length+24}
-        height={80}
+        width={width}
+        height={height}
         stroke='#000'
     >
         <ContentEditable 
             innerRef={textRef} 
             html={ textVal }
             onChange={handleContentChange}
-            className='h-full w-full bg-red flex items-center justify-center text-center drop-shadow-md outline-none'
+            className='h-full w-full bg-red flex items-center justify-start text-start drop-shadow-md outline-none'
             style={{
-                fontSize: 72
+                fontSize: fontSize
             }}
         />
     </foreignObject>

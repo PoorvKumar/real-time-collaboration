@@ -20,23 +20,24 @@ const LayerPreview = memo(({ layer }) => {
             />
         );
     }
+    
+    if (layer.type === LayerType.Text) {
+        return (
+            <Text
+                id={layer.id}
+                x={layer.points[0].x}
+                y={layer.points[0].y}
+                value={"text"}
+                fontSize={32}
+            />
+        );
+    }
 
     console.log("layer preview",layer);
 
     const layerData = getLayerData(layer.type, layer.points[0], layer.points[1]); //type, start, end
 
     switch (layer.type) {
-        case LayerType.Text:
-            return (
-                <Text 
-                    id={layer.id}
-                    x={layerData.x}
-                    y={layerData.y}
-                    value={"text"}
-                    width={layerData.width}
-                    height={layerData.height} 
-                />
-            );
         case LayerType.Rectangle:
             return (
                 <rect
