@@ -236,7 +236,7 @@ const Canvas = ({ boardId }) => {
 
     const onPointerDown = useCallback((e) => {
         if (canvasState.mode === CanvasMode.Inserting && canvasState.layerType === LayerType.Text) {
-            setStartPosition(cursorPosition);
+            // setStartPosition(cursorPosition);
             return;
         }
 
@@ -266,22 +266,27 @@ const Canvas = ({ boardId }) => {
         setCanvasState({ origin: cursorPosition, mode: CanvasMode.Pressing });
     }, [canvasState.mode, cursorPosition, setCanvasState, setPencilDraft]);
 
-    const onPointerUp = () => {
+    const onPointerUp = (e) => {
         if (canvasState.mode === CanvasMode.Translating || e.button===1) {
             setCanvasState({ ...canvasState, mode: CanvasMode.Hand });
         }
 
         if (canvasState.mode === CanvasMode.Inserting && canvasState.layerType === LayerType.Text) {
+            
             const newTextLayer = {
                 id: nanoid(),
                 type: LayerType.Text,
-                position: startPosition,
-                content: textContent
+                points: [cursorPosition,cursorPosition],
+                content: "Text"
             };
 
             socket.emit("newLayer", newTextLayer);
 
             addLayer(newTextLayer);
+
+            setCanvasState({
+                mode: CanvasMode.None
+            });
         }
     };
 

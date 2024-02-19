@@ -2,6 +2,7 @@ import { LayerType } from '@/constants';
 import React, { memo } from 'react'
 import Path from './Path';
 import { getLayerData } from '@/lib/utils';
+import Text from './Text';
 
 const LayerPreview = memo(({ layer }) => {
 
@@ -25,6 +26,17 @@ const LayerPreview = memo(({ layer }) => {
     const layerData = getLayerData(layer.type, layer.points[0], layer.points[1]); //type, start, end
 
     switch (layer.type) {
+        case LayerType.Text:
+            return (
+                <Text 
+                    id={layer.id}
+                    x={layerData.x}
+                    y={layerData.y}
+                    value={"text"}
+                    width={layerData.width}
+                    height={layerData.height} 
+                />
+            );
         case LayerType.Rectangle:
             return (
                 <rect

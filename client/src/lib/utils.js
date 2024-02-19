@@ -10,6 +10,7 @@ export const getLayerData=(type,startPosition,endPosition)=>
 {
   switch(type)
   {
+    case LayerType.Text:
     case LayerType.Rectangle:
       const x = Math.min(startPosition.x, endPosition.x);
       const y = Math.min(startPosition.y, endPosition.y);
