@@ -4,7 +4,7 @@ import { useSocket } from '@/hooks/useSocket';
 
 const Text = ({ id, x, y, value, fontSize }) => {
 
-    const socket=useSocket();
+    // const socket=useSocket();
     const textRef=useRef(null);
 
     const [textVal,setTextVal]=useState("text");
@@ -16,7 +16,7 @@ const Text = ({ id, x, y, value, fontSize }) => {
     {
         setTextVal(e.target.value);
 
-        socket.emit("textChange",{ id, text: e.target.value });
+        // socket.emit("textChange",{ id, text: e.target.value });
     }
 
   return (
