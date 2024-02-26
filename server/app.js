@@ -36,12 +36,12 @@ const authRouter=require("./routers/authRouter");
 
 app.use("/api/auth",authRouter);
 
-const { CLIENT_URL } = require("./config/config");
+const { allowedOrigins } = require("./config/config");
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
   },
 });
 
