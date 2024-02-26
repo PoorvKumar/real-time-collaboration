@@ -11,6 +11,7 @@ import Path from './Path';
 import LayerPreview from './LayerPreview';
 import { useThrottledEmit } from '@/hooks/useThrottledEmit';
 import { nanoid } from 'nanoid';
+import Info from './Info';
 
 const Canvas = ({ boardId }) => {
 
@@ -306,6 +307,7 @@ const Canvas = ({ boardId }) => {
 
     return (
         <main className='h-full w-full relative bg-white touch-none' style={{ cursor: getCursorStyle() }}>
+            <Info />
             <Toolbar
                 canvasState={canvasState}
                 setCanvasState={setCanvasState}
@@ -331,7 +333,7 @@ const Canvas = ({ boardId }) => {
                         <LayerPreview layer={layer} />
                     ))}
 
-                    <circle cx="50" cy="50" r="40" fill="blue" />
+                    {/* <circle cx="50" cy="50" r="40" fill="blue" /> */}
 
                     <CursorPresence />
 
