@@ -8,8 +8,14 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 const mongoose = require("mongoose");
+const { allowedOrigins } = require("./config/config");
 
 const errorMiddleware=require("./middlewares/errorMiddleware");
+
+// Routers
+const authRouter=require("./routers/authRouter");
+const userRouter=require("./routers/userRouter");
+const teamRouter=require("./routers/teamRouter");
 
 //Database Connection
 mongoose
@@ -31,12 +37,20 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-// Routers
-const authRouter=require("./routers/authRouter");
+app.get("/", (req, res) => {
+  return res.json({ msg: "Server running!" });
+});
 
 app.use("/api/auth",authRouter);
+app.use("/api/user",userRouter);
+app.use("/api/teams",teamRouter);
 
-const { allowedOrigins } = require("./config/config");
+app.use((req,res,next)=>
+{
+  return res.status(404).json({ msg: "Route not found" });
+});
+
+app.use(errorMiddleware);
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -95,12 +109,6 @@ io.on("connection", (socket) => {
     console.log("User disconnected", socket.id);
   });
 });
-
-app.get("/", (req, res) => {
-  return res.json({ msg: "Server running!" });
-});
-
-app.use(errorMiddleware);
 
 
 
