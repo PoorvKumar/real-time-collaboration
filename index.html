@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoomable and Pannable Canvas with Buttons</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+  #container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  #buttons {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
+  #buttons button {
+    margin-right: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+  <canvas id="canvas"></canvas>
+  <div id="buttons">
+    <button id="pencilButton">Pencil</button>
+    <button id="circleButton">Circle</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Set canvas size to match window size
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let scale = 1;
+let offsetX = 0;
+let offsetY = 0;
+let isDragging = false;
+let lastX, lastY;
+
+// Array to store circle positions
+const circles = [];
+
+// Function to draw a circle at the specified position
+function drawCircle(x, y) {
+  ctx.beginPath();
+  ctx.arc(x, y, 20, 0, Math.PI * 2);
+  ctx.fillStyle = 'blue';
+  ctx.fill();
+}
+
+// Function to draw all circles
+function drawCircles() {
+  circles.forEach(({ x, y }) => {
+    drawCircle(x, y);
+  });
+}
+
+// Function to draw everything on the canvas
+function draw() {
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Apply transformations
+  ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
+
+  // Draw circles at their stored positions
+  drawCircles();
+}
+
+// Variables to store mouse position
+let mouseX = 0;
+let mouseY = 0;
+
+// Handle mouse click to draw circle
+canvas.addEventListener('click', (event) => {
+  // Convert mouse coordinates to canvas coordinates
+  const rect = canvas.getBoundingClientRect();
+  const x = (event.clientX - rect.left - offsetX) / scale;
+  const y = (event.clientY - rect.top - offsetY) / scale;
+  
+  // Store circle position
+  circles.push({ x, y });
+
+  // Draw circle at the clicked position
+  drawCircle(x, y);
+});
+
+// Handle mouse movement to update mouse position
+canvas.addEventListener('mousemove', (event) => {
+  // Store mouse coordinates
+  mouseX = event.clientX;
+  mouseY = event.clientY;
+
+  if (isDragging) {
+    const deltaX = event.clientX - lastX;
+    const deltaY = event.clientY - lastY;
+    offsetX += deltaX;
+    offsetY += deltaY;
+    lastX = event.clientX;
+    lastY = event.clientY;
+
+    draw();
+  }
+});
+
+// Handle mouse down to start panning
+canvas.addEventListener('mousedown', (event) => {
+  if (event.buttons === 4) { // Check if scroll wheel is held down (buttons value for mouse wheel)
+    isDragging = true;
+    lastX = event.clientX;
+    lastY = event.clientY;
+  }
+});
+
+// Handle mouse up to stop panning
+canvas.addEventListener('mouseup', () => {
+  isDragging = false;
+});
+
+// Handle zooming
+canvas.addEventListener('wheel', (event) => {
+  const delta = event.deltaY > 0 ? -0.1 : 0.1; // Adjust zoom speed
+  const zoom = Math.exp(delta);
+  scale *= zoom;
+
+  // Keep zoom within limits (optional)
+  scale = Math.min(Math.max(scale, 0.1), 10);
+
+  draw();
+});
+
+// Handle pencil button click
+document.getElementById('pencilButton').addEventListener('click', () => {
+  // Add your pencil drawing logic here
+  console.log('Pencil button clicked');
+});
+
+// Handle circle button click
+document.getElementById('circleButton').addEventListener('click', () => {
+  // Add your circle drawing logic here
+  console.log('Circle button clicked');
+});
+
+// Initial draw
+draw();
+</script>
+
+</body>
+</html>

@@ -307,7 +307,7 @@ const Canvas = ({ boardId }) => {
 
     return (
         <main className='h-full w-full relative bg-white touch-none' style={{ cursor: getCursorStyle() }}>
-            {/* <Info /> */}
+            <Info />
             <Toolbar
                 canvasState={canvasState}
                 setCanvasState={setCanvasState}

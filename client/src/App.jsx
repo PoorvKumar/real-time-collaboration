@@ -10,6 +10,7 @@ import Loader from './components/Loader';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DashLayout from './layouts/DashLayout';
+import Test from "./pages/Test";
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
           {/* <Route path='/board/:boardId' element={<MultiplayerBoard />} /> */}
           <Route element={<ProtectedRoute />}>
             <Route path='/board/:boardId' element={<MultiplayerBoard />} />
+            <Route path='/test' element={<Test />} />
           </Route>
         </Routes>
       </BrowserRouter>
