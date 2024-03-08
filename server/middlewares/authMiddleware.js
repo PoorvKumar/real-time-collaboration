@@ -1,4 +1,4 @@
-const jwt=require("jsonwetoken");
+const jwt=require("jsonwebtoken");
 const User=require("../models/user");
 
 function authenticateToken(req,res,next)
