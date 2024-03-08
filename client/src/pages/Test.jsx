@@ -4,6 +4,7 @@ import { fabric } from 'fabric';
 const Test = () => {
   const canvasRef = useRef(null);
   const [tool, setTool] = useState('rectangle'); // Current selected drawing tool
+  const [objectIdCounter, setObjectIdCounter] = useState(1); // Counter for generating unique object IDs
 
   let isDrawing = false;
   let startX, startY, currentX, currentY;
@@ -14,6 +15,11 @@ const Test = () => {
       height: window.innerHeight,
       backgroundColor: 'white',
     });
+
+    const svg = canvas.toSVG();
+    console.log(svg);
+    const json = canvas.toJSON();
+    console.log(json);
 
     canvas.on('mouse:down', function (opt) {
       var evt = opt.e;
@@ -65,9 +71,17 @@ const Test = () => {
           width: Math.abs(currentX - startX),
           height: Math.abs(currentY - startY),
           fill: 'blue',
+          rx: 10, // Border radius
+          strokeWidth: 2, // Border width
+          stroke: 'red', // Border color
+          id: `rectangle_${objectIdCounter}`, // Assigning a unique ID to the rectangle
         });
+        setObjectIdCounter(objectIdCounter + 1); // Increment the object ID counter
         canvas.add(rect);
         canvas.renderAll();
+
+        // Log the object ID
+        console.log('Added rectangle with ID:', rect.id);
       } else if (tool === 'circle') {
         isDrawing = false;
         const radius = Math.sqrt(Math.pow(currentX - startX, 2) + Math.pow(currentY - startY, 2));
@@ -76,9 +90,14 @@ const Test = () => {
           top: startY - radius,
           radius: radius,
           fill: 'blue',
+          id: `circle_${objectIdCounter}`, // Assigning a unique ID to the circle
         });
+        setObjectIdCounter(objectIdCounter + 1); // Increment the object ID counter
         canvas.add(circle);
         canvas.renderAll();
+
+        // Log the object ID
+        console.log('Added circle with ID:', circle.id);
       }
     });
 
@@ -93,6 +112,26 @@ const Test = () => {
       opt.e.stopPropagation();
     });
 
+    canvas.on('object:modified', function (opt) {
+      // Log the modified object ID
+      console.log('Object modified with ID:', opt.target.id);
+    });
+
+    canvas.on('object:moving', function (opt) {
+      // Log the moving object ID
+      console.log('Object moving with ID:', opt.target.id);
+    });
+
+    canvas.on('object:scaling', function (opt) {
+      // Log the scaling object ID
+      console.log('Object scaling with ID:', opt.target.id);
+    });
+
+    canvas.on('object:rotating', function (opt) {
+      // Log the rotating object ID
+      console.log('Object rotating with ID:', opt.target.id);
+    });
+
     return () => {
       canvas.dispose();
     };
@@ -103,6 +142,7 @@ const Test = () => {
   };
 
   const selectSelectionTool = () => {
+    
     setTool('selection');
   };
 
