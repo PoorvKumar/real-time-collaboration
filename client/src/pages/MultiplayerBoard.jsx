@@ -9,7 +9,7 @@ const MultiplayerBoard = () => {
   console.log(boardId);
 
   return (
-    <RoomProvider boardId={boardId}>
+    <RoomProvider workspaceId={boardId}>
       <Canvas boardId={boardId} />
     </RoomProvider>
   )

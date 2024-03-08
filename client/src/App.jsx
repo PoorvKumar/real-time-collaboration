@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DashLayout from './layouts/DashLayout';
 import Test from "./pages/Test";
+import MultiplayerCanvas from "./pages/MultiplayerCanvas";
 
 function App() {
 
@@ -19,7 +20,7 @@ function App() {
   if (loading) {
     return <>
       <Loader />
-      <ToastContainer autoClose={5000} />
+      <ToastContainer autoClose={5000} closeOnClick draggable />
     </>;
   }
 
@@ -40,11 +41,12 @@ function App() {
           {/* <Route path='/board/:boardId' element={<MultiplayerBoard />} /> */}
           <Route element={<ProtectedRoute />}>
             <Route path='/board/:boardId' element={<MultiplayerBoard />} />
+            <Route path='/workspace/:workspaceId' element={<MultiplayerCanvas />} />
             <Route path='/test' element={<Test />} />
           </Route>
         </Routes>
       </BrowserRouter>
-      <ToastContainer autoClose={5000} />
+      <ToastContainer autoClose={5000} closeOnClick draggable />
     </>
   )
 }

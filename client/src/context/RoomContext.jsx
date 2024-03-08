@@ -7,7 +7,7 @@ import { CanvasMode } from "../constants";
 
 const RoomContext=createContext();
 
-export const RoomProvider=({ children, boardId })=>
+export const RoomProvider=({ children, workspaceId })=>
 {
     const [socket,setSocket]=useState(null);
     const [isConnected,setIsConnected]=useState(false); //loading state
@@ -71,8 +71,9 @@ export const RoomProvider=({ children, boardId })=>
             console.log("Connected to server",webSocket);
             setIsConnected(true);
             toast.success("Connected to websockets",{
-                position: "top-center",
-                autoClose: 3000
+                position: "bottom-left",
+                autoClose: 3000,
+                theme: "dark"
             });
         });
 
@@ -81,12 +82,13 @@ export const RoomProvider=({ children, boardId })=>
             console.log("Error establishing websocket connection");
             setIsConnected(false);
             toast.warn("Error connecting to websocket",{
-                position: "top-center",
-                autoClose: 3000
+                position: "bottom-left",
+                autoClose: 3000,
+                theme: "dark"
             });
         });
 
-        webSocket.emit("joinRoom",boardId);
+        webSocket.emit("joinRoom",workspaceId);
         const id=nanoid();
         setUserId(id);
 
@@ -104,7 +106,7 @@ export const RoomProvider=({ children, boardId })=>
         };    
 
         return cleanup;
-    },[boardId]);
+    },[workspaceId]);
 
     useEffect(()=>
     {
@@ -122,7 +124,7 @@ export const RoomProvider=({ children, boardId })=>
         {
             socket.off("newLayer");
         };
-    },[socket,boardId]);
+    },[socket,workspaceId]);
 
     const value={
         socket,
