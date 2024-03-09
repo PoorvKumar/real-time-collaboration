@@ -3,7 +3,7 @@ import { CanvasMode, LayerType } from '../../constants';
 import GridBackground from './GridBackground';
 import { useAuthenticate } from '@/context/AuthContext';
 import { useSocket } from '@/hooks/useSocket';
-import { useRoom } from '@/context/RoomContext';
+import { useRoom } from '@/context/BoardContext';
 import CursorPresence from './CursorPresence';
 import Cursor from './Cursor';
 import Toolbar from './Toolbar';

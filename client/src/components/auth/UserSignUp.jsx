@@ -29,7 +29,8 @@ const UserSignUp = () => {
             if(response.status===201)
             {
                 toast.success("User Created Successfully",{
-                    position: "top-center"
+                    position: "top-right",
+                    theme: "dark"
                 });
                 navigate('/signin');
             }
@@ -39,14 +40,16 @@ const UserSignUp = () => {
             if(error.response.status===409)
             {
                 toast.error("User already exists",{
-                    position: "top-center"
+                    position: "top-right",
+                    theme: "dark"
                 });
                 console.error('Error creating user', error);
                 return ;
             }
             console.error('Error creating user', error);
             toast.error("Error Creating User",{
-                position: "top-center"
+                position: "top-right",
+                theme: "dark"
             });
         }
     };
@@ -54,7 +57,8 @@ const UserSignUp = () => {
     const successNotif=()=>
     {
         toast.success("Signin Successful!", {
-            position: "top-center"
+            position: "top-right",
+            theme: "dark"
         });
     };
 
@@ -74,7 +78,8 @@ const UserSignUp = () => {
         {
             console.log("Error:", error.message);
             toast.error("Unable to signin to Google",{
-                position: "top-center"
+                position: "top-right",
+                theme: "dark"
             });
         }
     }

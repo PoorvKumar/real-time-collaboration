@@ -20,7 +20,8 @@ const UserAuthForm = () => {
     const successNotif=()=>
     {
         toast.success("Signin Successful!", {
-            position: "top-center"
+            position: "top-right",
+            theme: "dark"
         });
     };
 
@@ -40,7 +41,8 @@ const UserAuthForm = () => {
         {
             console.log("Error:", error.message);
             toast.error("Unable to signin to Google",{
-                position: "top-center"
+                position: "top-right",
+                theme: "dark"
             });
         }
     }
@@ -57,7 +59,8 @@ const UserAuthForm = () => {
         if(!email || !password)
         {
             toast.warn("Missing Information!",{
-                position: "top-center"
+                position: "top-right",
+                theme: "dark"
             });
             return ;
         }
@@ -76,7 +79,8 @@ const UserAuthForm = () => {
         {
             console.log("Error:", error.message);
             toast.error("Unable to signin",{
-                position: "top-center"
+                position: "top-right",
+                theme: "dark"
             });
         }
     };

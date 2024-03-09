@@ -92,7 +92,8 @@ const AuthProvider = ({ children }) => {
             console.log("Login error:", error.message);
             setLoading(false);
             toast.error("Login Error",{
-                position: "top-center"
+                position: "top-right",
+                theme: "dark"
             });
         }
 

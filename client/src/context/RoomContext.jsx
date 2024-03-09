@@ -3,59 +3,13 @@ import { io } from "socket.io-client";
 import { nanoid } from 'nanoid';
 import { useAuthenticate } from "./AuthContext";
 import { toast } from "react-toastify";
-import { CanvasMode } from "../constants";
 
 const RoomContext=createContext();
 
 export const RoomProvider=({ children, workspaceId })=>
 {
     const [socket,setSocket]=useState(null);
-    const [isConnected,setIsConnected]=useState(false); //loading state
-    const [selfPresence,setSelfPresence]=useState({
-        cursor: { x:0, y:0 },
-        selection: [],
-        pencilDraft: null,
-        penColor: null
-    });
-    const [others,setOthers]=useState([]);
-    const [othersPresence,setOthersPresence]=useState([]);
-    const [layers,setLayers]=useState([]);
-
-    const [undoStack,setUndoStack]=useState([]);
-    const [redoStack,setRedoStack]=useState([]);
-
-    const addLayer=(newLayer)=>
-    {
-        setLayers((prev)=>[ ...prev, newLayer ]);
-        setUndoStack((prev)=>[ ...prev, layers ]);
-        setRedoStack([]);
-    };
-
-    //Function to undo an action
-    const undo=()=>
-    {
-        if(undoStack.length===0)
-        {
-            return ;
-        }
-        const prevState=undoStack.pop();
-        setLayers(prevState);
-        setRedoStack((prevStack)=>[ ...prevStack, layers ]);
-    }
-
-    //Function to redo an action
-    const redo=()=>
-    {
-        if(redoStack.length===0)
-        {
-            return ;
-        }
-        const nextStack=redoStack.pop();
-        setLayers(nextStack);
-        setUndoStack((prevStack)=>[ ...prevStack, layers ]);
-    };
-
-    const [canvasState, setCanvasState] = useState({ mode: CanvasMode.None });
+    const [isConnected,setIsConnected]=useState(false);
 
     const [userId,setUserId]=useState("");
 
@@ -68,9 +22,8 @@ export const RoomProvider=({ children, workspaceId })=>
 
         webSocket.on("connect",()=>
         {
-            console.log("Connected to server",webSocket);
             setIsConnected(true);
-            toast.success("Connected to websockets",{
+            toast.success("Connection Established",{
                 position: "bottom-left",
                 autoClose: 3000,
                 theme: "dark"
@@ -79,7 +32,6 @@ export const RoomProvider=({ children, workspaceId })=>
 
         webSocket.on("connect_error",()=>
         {
-            console.log("Error establishing websocket connection");
             setIsConnected(false);
             toast.warn("Error connecting to websocket",{
                 position: "bottom-left",
@@ -88,59 +40,28 @@ export const RoomProvider=({ children, workspaceId })=>
             });
         });
 
-        webSocket.emit("joinRoom",workspaceId);
+        webSocket.emit("room:join",workspaceId);
         const id=nanoid();
         setUserId(id);
 
-        webSocket.emit("userJoin",{ id, user });
-        webSocket.on("userJoin",(data)=>
+        webSocket.emit("user:join",{ id, user });
+        webSocket.on("user:join",(data)=>
         {
-            console.log("User joined",data);
-            setOthers(prev=>[...prev,data]);
+            
         });
 
         const cleanup = () => {
-            webSocket.off("userJoin");
-            webSocket.emit("userLeft", { id });
+            webSocket.off("join:user");
+            webSocket.emit("user:left", { id });
             webSocket.disconnect();
         };    
 
         return cleanup;
     },[workspaceId]);
 
-    useEffect(()=>
-    {
-        if(!socket)
-        {
-            return ;
-        }
-
-        socket.on("newLayer",(data)=>
-        {
-            addLayer(data);
-        });
-
-        return ()=>
-        {
-            socket.off("newLayer");
-        };
-    },[socket,workspaceId]);
-
     const value={
         socket,
-        id: userId,
-        selfPresence,
-        setSelfPresence,
-        others,
-        othersPresence,
-        layers,
-        addLayer,
-        canvasState,
-        setCanvasState,
-        undo,
-        redo,
-        canUndo: undoStack.length>0,
-        canRedo: redoStack.length>0
+        userId,
     };
 
     return <RoomContext.Provider value={value}>

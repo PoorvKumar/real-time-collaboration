@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect, useParams } from 'react-router-dom';
 import Canvas from '../components/multiplayer-board/Canvas';
-import { RoomProvider, useRoom } from '../context/RoomContext';
+import { RoomProvider, useRoom } from '../context/BoardContext';
 
 const MultiplayerBoard = () => {
 

@@ -62,6 +62,12 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
 
+  socket.on("room:join",(workspaceId)=>
+  {
+    socket.join("workspace_"+workspaceId);
+  });
+
+  //old events
   socket.on("joinRoom",(id)=>
   {
     socket.join(id);
