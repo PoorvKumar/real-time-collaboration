@@ -67,6 +67,18 @@ io.on("connection", (socket) => {
     socket.join("workspace_"+workspaceId);
   });
 
+  socket.on("user:join",(data)=>
+  {
+    const roomId=Array.from(socket.rooms)[1];
+    socket.to(roomId).emit("user:join",data);
+  });
+
+  socket.on("cursor:update",(data)=>
+  {
+    const roomId=Array.from(socket.rooms)[1];
+    socket.to(roomId).emit("cursor:update",data);
+  });
+
   //old events
   socket.on("joinRoom",(id)=>
   {

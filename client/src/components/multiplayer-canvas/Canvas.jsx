@@ -15,6 +15,7 @@ const Canvas = () => {
 
   const socket=useSocket();
   const { user }=useAuthenticate();
+  const { userId }=useRoom();
 
   useEffect(()=>
   {
@@ -27,13 +28,8 @@ const Canvas = () => {
     canvas.on("mouse:move",(opt)=>
     {
       const pointer = canvas.getPointer(opt.e);
-      socket.emit("cursor:update", { pointer });
+      socket.emit("cursor:update", { userId, position: pointer, name: user.name });
       setCursorPosition({ x: pointer.x, y: pointer.y });
-    });
-
-    socket.on("cursor:update",(data)=>
-    {
-
     });
 
     return ()=>
@@ -50,6 +46,7 @@ const Canvas = () => {
       <svg ref={svgRef} className="absolute top-0 left-0 h-full w-full pointer-events-none">
         {/* SVG elements for displaying user cursors */}
         <Cursor position={cursorPosition} userId={123} name={"abc"}/>
+        <CursorPresence />
       </svg>
     </div>
   )

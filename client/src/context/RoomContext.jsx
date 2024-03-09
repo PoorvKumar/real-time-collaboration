@@ -44,10 +44,10 @@ export const RoomProvider=({ children, workspaceId })=>
         const id=nanoid();
         setUserId(id);
 
-        webSocket.emit("user:join",{ id, user });
+        webSocket.emit("user:join",{ userId: id, user });
         webSocket.on("user:join",(data)=>
         {
-            
+            console.log("User joined: ",data);
         });
 
         const cleanup = () => {

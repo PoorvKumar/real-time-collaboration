@@ -3,7 +3,7 @@ import { CanvasMode, LayerType } from '../../constants';
 import GridBackground from './GridBackground';
 import { useAuthenticate } from '@/context/AuthContext';
 import { useSocket } from '@/hooks/useSocket';
-import { useRoom } from '@/context/BoardContext';
+import { useRoom } from '@/context/RoomContext';
 import CursorPresence from './CursorPresence';
 import Cursor from './Cursor';
 import Toolbar from './Toolbar';
@@ -16,8 +16,7 @@ import Info from './Info';
 const Canvas = ({ boardId }) => {
 
     const { user } = useAuthenticate();
-    const { id, layers, addLayer } = useRoom();
-    const socket = useSocket();
+    const { userId: id, socket } = useRoom();
 
     // canvas state
     // const [canvasState, setCanvasState] = useState({ mode: CanvasMode.None });
