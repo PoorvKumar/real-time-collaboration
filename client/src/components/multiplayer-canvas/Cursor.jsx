@@ -1,14 +1,11 @@
 import React, { memo } from 'react';
 import { MousePointer2 } from 'lucide-react';
-import stc from 'string-to-color';
 
-const Cursor = memo(({ position, userId, name }) => {
+const Cursor = memo(({ position, name, color }) => {
 
     if (!position) {
         return null;
     }
-
-    const color=stc(userId);
 
     return (
         <foreignObject 

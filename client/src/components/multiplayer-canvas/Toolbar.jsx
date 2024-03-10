@@ -4,9 +4,11 @@ import { Circle, Hand, MousePointer2, MoveUpRight, Pencil, Redo2, Slash, Square,
 import { CanvasMode } from '@/constants';
 import { LayerType } from '@/constants';
 import { useRoom } from '@/context/RoomContext';
+import { useCanvas } from '@/context/CanvasContext';
 
 const Toolbar = () => {
 
+    const { tool, setTool }=useCanvas();
     const { undo, redo, canUndo, canRedo }=useRoom();
 
     return (
@@ -15,48 +17,62 @@ const Toolbar = () => {
                 <ToolButton
                     label={"Select"}
                     Icon={MousePointer2}
+                    onClick={()=> setTool('select')}
+                    isActive={tool==='select'}
                 />
                 <ToolButton 
                     label="Hand"
                     Icon={Hand}
+                    onClick={()=> setTool('hand')}
+                    isActive={tool==='hand'}
                 />
                 <ToolButton
                     label="Rectangle"
                     Icon={Square}
+                    onClick={()=> setTool('rectangle')}
+                    isActive={tool==='rectangle'}
                 />
                 <ToolButton
                     label="Ellipse"
                     Icon={Circle}
+                    onClick={()=> setTool('circle')}
+                    isActive={tool==='circle'}
                 />
                 <ToolButton
                     label="Arrow"
                     Icon={MoveUpRight}
+                    onClick={()=> setTool('arrow')}
+                    isActive={tool==='arrow'}
                 />
                 <ToolButton
                     label="Line"
                     Icon={Slash}
+                    onClick={()=> setTool('line')}
+                    isActive={tool==='line'}
                 />
                 <ToolButton
                     label="Pen"
                     Icon={Pencil}
+                    onClick={()=> setTool('pencil')}
+                    isActive={tool==='pencil'}
                 />
                 <ToolButton
                     label="Text"
                     Icon={Type}
+                    onClick={()=> setTool('text')}
+                    isActive={tool==='text'}
                 />
             </div>
             <div className='bg-white rounded-md p-1.5 flex flex-col items-center shadow-md'>
                 <ToolButton 
                     label="Undo"
                     Icon={Undo2}
-                    onClick={undo} 
-                    isDisabled={!canUndo}
+                    onClick={()=> {}}
                 />
                 <ToolButton 
                     label="Redo"
                     Icon={Redo2}
-                    onClick={redo}
-                    isDisabled={!canRedo}
+                    onClick={()=> {}}
                 />
             </div>
         </div>

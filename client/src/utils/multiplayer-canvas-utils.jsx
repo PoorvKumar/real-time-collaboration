@@ -1,46 +1,63 @@
 import { fabric } from "fabric";
-import { MousePointer2 } from "lucide-react";
 
-export const drawCursor=(canvas,position,userId,name)=>
-{
-    // console.log(canvas);
-    console.log("Position",position);
-    console.log("User:",userId);
-    console.log("Name:",name);
-    if(canvas)
-    {
-        // canvas.remove(userId+'_cursor');
-        // canvas.remove(userId+'_name');
-
-        let cursorIcon=new fabric.Circle({
-            radius: 5,
-            fill: 'red',
-            originX: 'center',
-            originY: 'center',
-            left: position.x,
-            top: position.y,
-            selectable: false,
-            id: userId+'_cursor'
-        });
-        canvas.add(cursorIcon);
-
-        // let svgElem=document.createElementNS("http://www.w3.org/2000/svg","svg");
-
-        // svgElem.setAttribute("width","24");
-        // svgElem.setAttribute("height","24");
-        // svgElem.innerHTML=MousePointer2;
-
-        // fabric.loadSVGFromString(svgElem.outerHTML,(objects,options)=>
-        // {
-        //     let icon=fabric.util.groupSVGElements(objects,options);
-        //     icon.set({
-        //         left: position.x,
-        //         top: position.y,
-        //         selectable: false,
-        //         id: userId+'_cursor'
-        //     });
-
-        //     canvas.add(icon);
-        // })
+class Cursor {
+    constructor(canvas, userId, name, color) {
+        this.canvas = canvas;
+        this.userId = userId;
+        this.name = name;
+        this.color = color;
+        this.createCursor();
     }
-};
+
+    createCursor() {
+        const cursorIcon = new fabric.Path('M4 4 11.07 21 13.58 13.61 21 11.07z', {
+            fill: this.color || 'black',
+            selectable: false,
+            stroke: 'none',
+          });
+          cursorIcon.scale(2);
+          cursorIcon.set({
+            left: 0,
+            top: 0,
+          });
+      
+          const cursorText = new fabric.Text(this.name, {
+            fontSize: 12,
+            selectable: false,
+            originX: 'center',
+            originY: 'top',
+            top: 20,
+            fill: 'white',
+          });
+          const textWidth = cursorText.width * cursorText.scaleX;
+          const textHeight = cursorText.height * cursorText.scaleY;
+      
+          const textBackground = new fabric.Rect({
+            width: textWidth + 10, // Add padding
+            height: textHeight + 5, // Add padding
+            fill: this.color || 'black',
+            originX: 'center',
+            originY: 'top',
+            top: 30, // Adjust position
+            selectable: false,
+          });
+      
+          const group = new fabric.Group([cursorIcon, textBackground, cursorText], {
+            selectable: false,
+          });
+      
+          this.canvas.add(group);
+          this.cursor = group;      
+    }
+
+    updatePosition(position) {
+        this.cursor.set({ left: position.x, top: position.y });
+        this.canvas.renderAll();
+    }
+
+    removeCursor() {
+        this.canvas.remove(this.cursor);
+    }
+}
+
+export { Cursor };

@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { nanoid } from 'nanoid';
 import { useAuthenticate } from "./AuthContext";
 import { toast } from "react-toastify";
+import stc from 'string-to-color';
 
 const RoomContext=createContext();
 
@@ -10,8 +11,9 @@ export const RoomProvider=({ children, workspaceId })=>
 {
     const [socket,setSocket]=useState(null);
     const [isConnected,setIsConnected]=useState(false);
-
+    
     const [userId,setUserId]=useState("");
+    const [color,setColor]=useState("red");
 
     const { user }=useAuthenticate();
 
@@ -43,6 +45,7 @@ export const RoomProvider=({ children, workspaceId })=>
         webSocket.emit("room:join",workspaceId);
         const id=nanoid();
         setUserId(id);
+        setColor(stc(id));
 
         webSocket.emit("user:join",{ userId: id, user });
         webSocket.on("user:join",(data)=>
@@ -52,7 +55,8 @@ export const RoomProvider=({ children, workspaceId })=>
 
         const cleanup = () => {
             webSocket.off("join:user");
-            webSocket.emit("user:left", { id });
+            webSocket.emit("cursor:leave",{ userId: id });
+            webSocket.emit("user:left", { userId: id });
             webSocket.disconnect();
         };    
 
@@ -62,6 +66,7 @@ export const RoomProvider=({ children, workspaceId })=>
     const value={
         socket,
         userId,
+        color,
     };
 
     return <RoomContext.Provider value={value}>

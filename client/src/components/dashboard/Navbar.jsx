@@ -1,11 +1,24 @@
 import React from 'react'
 import SearchInput from './SearchInput'
+import { Link } from 'react-router-dom'
 
 const Navbar = () => {
   return (
-    <div className='flex items-center gap-x-4 p-5'>
-      <div className='hidden lg:flex lg:flex-1'>
-        <SearchInput />
+    <div className=" text-white p-4">
+      <div className="flex justify-between items-center">
+        {/* Navigation Links */}
+        <div className="flex">
+          <Link to="/files" className="mr-4">Files</Link>
+          {/* Add more navigation links as needed */}
+        </div>
+        {/* Search Input */}
+        <div>
+          <input
+            type="text"
+            placeholder="Search by name"
+            className="p-2 rounded"
+          />
+        </div>
       </div>
     </div>
   )

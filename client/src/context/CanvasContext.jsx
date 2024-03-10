@@ -4,8 +4,9 @@ const CanvasContext=createContext(null);
 
 export const CanvasProvider=({children})=>
 {
+    const [tool,setTool]=useState('select');
 
-    return <CanvasContext.Provider value={{  }}>
+    return <CanvasContext.Provider value={{ tool, setTool }}>
         {children}
     </CanvasContext.Provider>;
 };

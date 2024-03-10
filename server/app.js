@@ -79,6 +79,12 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("cursor:update",data);
   });
 
+  socket.on("cursor:leave",(data)=>
+  {
+    const roomId=Array.from(socket.rooms)[1];
+    socket.to(roomId).emit("cursor:leave",data);
+  });
+
   //old events
   socket.on("joinRoom",(id)=>
   {
