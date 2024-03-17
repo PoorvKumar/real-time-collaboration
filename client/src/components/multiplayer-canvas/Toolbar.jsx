@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ToolButton from './ToolButton';
 import { Circle, Hand, MousePointer2, MoveUpRight, Pencil, Redo2, Slash, Square, Type, Undo2 } from 'lucide-react';
 import { CanvasMode } from '@/constants';
@@ -8,8 +8,14 @@ import { useCanvas } from '@/context/CanvasContext';
 
 const Toolbar = () => {
 
-    const { tool, setTool }=useCanvas();
+    const { tool, setTool, isDrawing, setIsDrawing }=useCanvas();
     const { undo, redo, canUndo, canRedo }=useRoom();
+
+    useEffect(()=>
+    {
+        console.log("Tool:",tool);
+        console.log("Drawing?:",isDrawing);
+    },[tool]);
 
     return (
         <div className='absolute top-[40%] -translate-y-[40%] left-4 flex flex-col gap-y-4'>
@@ -17,43 +23,43 @@ const Toolbar = () => {
                 <ToolButton
                     label={"Select"}
                     Icon={MousePointer2}
-                    onClick={()=> setTool('select')}
+                    onClick={()=> { setTool('select'); setIsDrawing(false); }}
                     isActive={tool==='select'}
                 />
                 <ToolButton 
                     label="Hand"
                     Icon={Hand}
-                    onClick={()=> setTool('hand')}
+                    onClick={()=> { setTool('hand'); setIsDrawing(false); }}
                     isActive={tool==='hand'}
                 />
                 <ToolButton
                     label="Rectangle"
                     Icon={Square}
-                    onClick={()=> setTool('rectangle')}
+                    onClick={()=> { setTool('rectangle'); setIsDrawing(true); }}
                     isActive={tool==='rectangle'}
                 />
                 <ToolButton
                     label="Ellipse"
                     Icon={Circle}
-                    onClick={()=> setTool('circle')}
+                    onClick={()=> { setTool('circle'); setIsDrawing(true); }}
                     isActive={tool==='circle'}
                 />
                 <ToolButton
                     label="Arrow"
                     Icon={MoveUpRight}
-                    onClick={()=> setTool('arrow')}
+                    onClick={()=> { setTool('arrow'); setIsDrawing(true); }}
                     isActive={tool==='arrow'}
                 />
                 <ToolButton
                     label="Line"
                     Icon={Slash}
-                    onClick={()=> setTool('line')}
+                    onClick={()=> { setTool('line'); setIsDrawing(true); }}
                     isActive={tool==='line'}
                 />
                 <ToolButton
                     label="Pen"
                     Icon={Pencil}
-                    onClick={()=> setTool('pencil')}
+                    onClick={()=> { setTool('pencil'); setIsDrawing(true); }}
                     isActive={tool==='pencil'}
                 />
                 <ToolButton

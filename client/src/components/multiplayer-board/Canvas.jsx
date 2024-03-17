@@ -67,7 +67,7 @@ const Canvas = ({ boardId }) => {
             const { clientX, clientY } = e;
             // Calculate adjusted cursor position based on camera position and zoom level
             const adjustedX = (clientX - camera.x) / zoomLevel;
-            const adjustedY = (clientY - camera.y) / zoomLevel;
+            const adjustedY = (clientY - camera.y) / zoomLevel; 
             setCursorPosition({ x: adjustedX, y: adjustedY });
 
             // throttledEmit('cursorPosition',{ id, cursorPosition: { x: adjustedX, y: adjustedY }, name: user.name });
