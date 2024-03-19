@@ -15,7 +15,7 @@ export function handleZoom(canvas, setZoomLvl, setVpt) {
     }
 }
 
-export function handleWheelPanning(canvas,setVpt) {
+export function handleWheelPanning(canvas, setVpt) {
     return function (opt) {
         if (!opt.e.ctrlKey) {
             let delta = opt.e.deltaY;
@@ -69,4 +69,15 @@ export function handlePanningUp(canvas) {
         canvas.isPanning = false;
         canvas.selection = true;
     }
+}
+
+/* ============rectangle============ */
+export function startAddRect(canvas)
+{
+    
+}
+
+export function startDrawingRect(canvas)
+{
+
 }

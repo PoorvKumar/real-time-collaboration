@@ -26,12 +26,14 @@
     "react": "^18.2.0",
     "react-contenteditable": "^3.3.7",
     "react-dom": "^18.2.0",
+    "react-resizable": "^3.0.5",
     "react-router-dom": "^6.22.0",
     "react-toastify": "^10.0.4",
     "socket.io-client": "^4.7.4",
     "string-to-color": "^2.2.2",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.55",

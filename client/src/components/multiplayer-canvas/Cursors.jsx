@@ -34,7 +34,7 @@ const Cursors = () => {
 
       socket.on("cursor:update",(data)=>
       {
-        // console.log(data);
+        // console.log(data.position);
         updateCursor(data);
       });
 
