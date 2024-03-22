@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRoom } from '@/context/RoomContext';
-import Path from './Path';
+import Path from '../multiplayer-canvas/Path';
 
 const Drafts=()=>
 {

@@ -1,184 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zoomable and Pannable Canvas with Buttons</title>
-<style>
-  body, html {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-  }
-  #container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-  canvas {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  #buttons {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-  }
-  #buttons button {
-    margin-right: 10px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Drawing Test with Fabric.js and SVG Overlay</title>
+  <style>
+    canvas {
+      border: 1px solid #000;
+    }
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
+  <h1>WebSocket Drawing Test with Fabric.js and SVG Overlay</h1>
+  <canvas id="canvas" width="800" height="600"></canvas>
+  <svg id="overlay" width="800" height="600"></svg>
 
-<div id="container">
-  <canvas id="canvas"></canvas>
-  <div id="buttons">
-    <button id="pencilButton">Pencil</button>
-    <button id="rectangleButton">Rectangle</button>
-  </div>
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/fabric"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+  <script>
+    const canvas = new fabric.Canvas('canvas');
+    const overlay = document.getElementById('overlay');
+    const overlayCtx = overlay.getContext('2d');
+    let isDrawing = false;
+    let lastPoint = {};
 
-<script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+    // Set up WebSocket connection
+    const socket = io("http://localhost:5000");
 
-// Set canvas size to match window size
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+    // Handle WebSocket messages
+    socket.on('canvas:update', function(data) {
+      if (data.type === 'pencil') {
+        if (data.action === 'start') {
+          drawPreviewLine(data.fromX, data.fromY, data.toX, data.toY, 'black', 2);
+        } else if (data.action === 'end') {
+          drawFinalizedLine(data.fromX, data.fromY, data.toX, data.toY, 'black', 2);
+        }
+      }
+    });
 
-let scale = 1;
-let offsetX = 0;
-let offsetY = 0;
-let isPanning = false;
-let startRectX, startRectY;
+    // Event listeners for drawing
+    canvas.on('mouse:down', (e) => {
+      isDrawing = true;
+      lastPoint = { x: e.pointer.x, y: e.pointer.y };
+      
+      // Emit start drawing event
+      socket.emit('canvas:update', { type: 'pencil', action: 'start', ...lastPoint });
+    });
 
-// Array to store rectangle positions
-const rectangles = [];
+    canvas.on('mouse:move', (e) => {
+      if (isDrawing) {
+        const currentPoint = { x: e.pointer.x, y: e.pointer.y };
+        drawPreviewLine(lastPoint.x, lastPoint.y, currentPoint.x, currentPoint.y, 'black', 2);
+        
+        lastPoint = currentPoint;
+      }
+    });
 
-// Function to draw a rectangle
-function drawRectangle(x1, y1, x2, y2) {
-  const rectX1 = Math.min(x1, x2);
-  const rectY1 = Math.min(y1, y2);
-  const rectX2 = Math.max(x1, x2);
-  const rectY2 = Math.max(y1, y2);
+    canvas.on('mouse:up', () => {
+      isDrawing = false;
+      
+      // Emit end drawing event
+      socket.emit('canvas:update', { type: 'pencil', action: 'end', ...lastPoint });
+    });
 
-  ctx.beginPath();
-  ctx.rect(rectX1, rectY1, rectX2 - rectX1, rectY2 - rectY1);
-  ctx.strokeStyle = 'blue';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-}
+    // Function to draw preview line on SVG overlay
+    function drawPreviewLine(x1, y1, x2, y2, color, width) {
+      overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
+      overlayCtx.strokeStyle = color;
+      overlayCtx.lineWidth = width;
+      overlayCtx.beginPath();
+      overlayCtx.moveTo(x1, y1);
+      overlayCtx.lineTo(x2, y2);
+      overlayCtx.stroke();
+    }
 
-
-// Function to draw everything on the canvas
-function draw() {
-  // Clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Apply transformations
-  ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
-
-  // Draw stored rectangles
-  rectangles.forEach(({ x1, y1, x2, y2 }) => {
-    drawRectangle(x1, y1, x2, y2);
-  });
-}
-
-// Variables to store mouse position
-let mouseX = 0;
-let mouseY = 0;
-
-// Handle mouse movement to update mouse position and draw rectangle preview
-canvas.addEventListener('pointermove', (event) => {
-  // Store mouse coordinates
-  mouseX = (event.clientX - canvas.getBoundingClientRect().left) / scale - offsetX;
-  mouseY = (event.clientY - canvas.getBoundingClientRect().top) / scale - offsetY;
-
-  if (isPanning) {
-    const deltaX = event.clientX - lastX;
-    const deltaY = event.clientY - lastY;
-    offsetX += deltaX / scale;
-    offsetY += deltaY / scale;
-    lastX = event.clientX;
-    lastY = event.clientY;
-
-    draw();
-  }
-});
-
-// Handle mouse down to start drawing rectangle
-canvas.addEventListener('pointerdown', (event) => {
-  if (event.buttons === 4) { // Check if scroll wheel is held down (buttons value for mouse wheel)
-    isPanning = true;
-    lastX = event.clientX;
-    lastY = event.clientY;
-  } else {
-    startRectX = mouseX;
-    startRectY = mouseY;
-  }
-});
-
-// Handle mouse up to finish drawing rectangle
-canvas.addEventListener('pointerup', (event) => {
-  isPanning = false;
-  if (startRectX !== undefined && startRectY !== undefined) {
-    const endRectX = mouseX;
-    const endRectY = mouseY;
-
-    // Store rectangle position
-    rectangles.push({ x1: startRectX, y1: startRectY, x2: endRectX, y2: endRectY });
-
-    // Redraw everything
-    draw();
-  }
-});
-
-// Handle zooming
-canvas.addEventListener('wheel', (event) => {
-    event.preventDefault(); 
-
-  const zoomFactor = 0.1; // Adjust zoom speed
-  const delta = event.deltaY > 0 ? -zoomFactor : zoomFactor; // Determine direction of zoom
-  const zoom = Math.exp(delta);
-
-  const oldScale = scale; // Store current scale for reference
-
-  scale *= zoom;
-
-  // Keep zoom within limits (optional)
-  scale = Math.min(Math.max(scale, 0.1), 10);
-
-  // Adjust offset to keep zoom centered around mouse position
-  const mouseOffsetX = event.clientX - canvas.getBoundingClientRect().left;
-  const mouseOffsetY = event.clientY - canvas.getBoundingClientRect().top;
-
-  offsetX = (offsetX - mouseOffsetX) * (scale / oldScale) + mouseOffsetX;
-  offsetY = (offsetY - mouseOffsetY) * (scale / oldScale) + mouseOffsetY;
-
-  draw();
-
-});
-
-// Handle pencil button click
-document.getElementById('pencilButton').addEventListener('click', () => {
-  // Add your pencil drawing logic here
-  console.log('Pencil button clicked');
-});
-
-// Handle rectangle button click
-document.getElementById('rectangleButton').addEventListener('click', () => {
-  // Add your rectangle drawing logic here
-  console.log('Rectangle button clicked');
-});
-
-// Initial draw
-draw();
-</script>
-
+    // Function to draw finalized line on Fabric.js canvas
+    function drawFinalizedLine(x1, y1, x2, y2, color, width) {
+      const path = new fabric.Path(`M ${x1} ${y1} L ${x2} ${y2}`);
+      path.set({ fill: '', stroke: color, strokeWidth: width });
+      canvas.add(path);
+      canvas.renderAll();
+      
+      // Clear SVG overlay
+      overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
+    }
+  </script>
 </body>
 </html>

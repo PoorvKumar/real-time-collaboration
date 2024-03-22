@@ -24,7 +24,7 @@ const Header = () => {
         Canvas
       </button>
       <button
-        className={`flex-grow px-4 py-1 border text-sm text-black ${
+        className={`flex-grow px-4 py-1 border text-sm text-black  ${
           activeTab === "both" ? "bg-[#d8e6fd] text-[#1e40af]" : "bg-white text-black"
         }`}
         onClick={() => setActiveTab("both")}

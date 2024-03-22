@@ -1,6 +1,6 @@
 import { LayerType } from '@/constants';
 import React, { memo } from 'react'
-import Path from './Path';
+import Path from '../multiplayer-canvas/Path';
 import { getLayerData } from '@/lib/utils';
 import Text from './Text';
 

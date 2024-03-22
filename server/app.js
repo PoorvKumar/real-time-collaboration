@@ -8,9 +8,30 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 const mongoose = require("mongoose");
+const { createClient }=require("redis");
 const { allowedOrigins } = require("./config/config");
 
 const errorMiddleware=require("./middlewares/errorMiddleware");
+
+// REDIS
+const client = createClient();
+
+client
+  .connect()
+  .then(() => {
+    console.log("Redis Connected");
+  })
+  .catch((err) => {
+    console.log("Error Connecting to Redis client", err);
+  });
+
+  // client.on("connect", () => {
+  //   console.log("Connected to Redis");
+  // });
+
+  client.on("error", (err) => {
+    console.error("Redis error:", err);
+  });
 
 // Routers
 const authRouter=require("./routers/authRouter");
@@ -85,62 +106,22 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("cursor:leave",data);
   });
 
-  socket.on("canvas:update",(data)=>
+  socket.on("canvas:update",async (data)=>
   {
     const roomId=Array.from(socket.rooms)[1];
     socket.to(roomId).emit("canvas:update",data);
   });
 
-  //old events
-  socket.on("joinRoom",(id)=>
-  {
-    socket.join(id);
-  });
-
-  socket.on("userJoin",(data)=>
+  socket.on("svg:drawing",(data)=>
   {
     const roomId=Array.from(socket.rooms)[1];
-    socket.to(roomId).emit("userJoin",data);
-  });
-
-  socket.on("cursorPosition",(data)=>
-  {
-    const roomId=Array.from(socket.rooms)[1];
-    socket.to(roomId).emit("updateCursorPosition",data);
-  });
-
-  socket.on("cursorLeave",(data)=>
-  {
-    const roomId=Array.from(socket.rooms)[1];
-    socket.to(roomId).emit("cursorLeave",data);
-  });
-
-  socket.on("updatePencilDraft",(data)=>
-  {
-    const roomId=Array.from(socket.rooms)[1];
-    // console.log("updateDraft",socket.id,data);
-    socket.to(roomId).emit("updatePencilDraft",data);
-  });
-
-  socket.on("updateLayerDraft",(data)=>
-  {
-    const roomId=Array.from(socket.rooms)[1];
-    // console.log("updateDraft",socket.id,data);
-    socket.to(roomId).emit("updateLayerDraft",data);
-  });
-
-  socket.on("newLayer",(data)=>
-  {
-    const roomId=Array.from(socket.rooms)[1];
-    socket.to(roomId).emit("newLayer",data);
+    socket.to(roomId).emit("svg:drawing",data);
   });
 
   socket.on("disconnect", () => {
     console.log("User disconnected", socket.id);
   });
 });
-
-
 
 const port = process.env.PORT || 5000;
 server.listen(port, () => {

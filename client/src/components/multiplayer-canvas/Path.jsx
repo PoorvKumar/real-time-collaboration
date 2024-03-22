@@ -9,9 +9,9 @@ const Path = ({ x, y, points, fill, onPointerDown, stroke }) => {
         onPointerDown={onPointerDown}
         d={getSvgPathFromStroke(
             getStroke(points,{
-                size: 3,
+                size: 2,
                 thinning: 0.55,
-                smoothing: 0.55,
+                smoothing: 0.5,
                 streamline: 0.5,
             })
         )}

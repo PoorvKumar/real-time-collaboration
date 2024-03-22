@@ -10,16 +10,15 @@ export const CanvasProvider = ({ children }) => {
   const [vpt, setVpt] = useState({ x: 0, y: 0 });
   const [zoomLvl, setZoomLvl] = useState(1);
 
-  const canvasDataRef=useRef({
-    background: "white",
-    objects: []
-  });
-  // const [canvasData, setCanvasData] = useState(null);
+  const objectsMap=useRef({});
+  // console.log(canvasDataRef);
+  const [canvasData, setCanvasData] = useState(null);
+  // const canvasDataRef=useRef(null);
   // const updateCanvasData = (newData) => {
   //   setCanvasData(newData);
   // };
 
-  return <CanvasContext.Provider value={{ vpt, setVpt, zoomLvl, setZoomLvl, tool, setTool, canvasDataRef, activeTab, setActiveTab, prevTool, setPrevTool }}>
+  return <CanvasContext.Provider value={{ vpt, setVpt, zoomLvl, setZoomLvl, tool, setTool, canvasData, objectsMap, activeTab, setActiveTab, prevTool, setPrevTool }}>
     {children}
   </CanvasContext.Provider>;
 };

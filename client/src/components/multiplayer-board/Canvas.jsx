@@ -7,7 +7,7 @@ import { useRoom } from '@/context/RoomContext';
 import CursorPresence from './CursorPresence';
 import Cursor from './Cursor';
 import Toolbar from './Toolbar';
-import Path from './Path';
+import Path from '../multiplayer-canvas/Path';
 import LayerPreview from './LayerPreview';
 import { useThrottledEmit } from '@/hooks/useThrottledEmit';
 import { nanoid } from 'nanoid';
