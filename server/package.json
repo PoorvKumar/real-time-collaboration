@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "Poorv Kumar",
@@ -17,8 +17,10 @@
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
     "google-auth-library": "^9.6.3",
+    "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.2",
+    "morgan": "^1.10.0",
     "nodemailer": "^6.9.12",
     "redis": "^4.6.13",
     "socket.io": "^4.7.4"

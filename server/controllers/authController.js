@@ -71,7 +71,7 @@ const signin=async (req,res,next)=>
         user.refreshToken=refreshToken;
         await user.save();
 
-        const userData=Object.assign({},{ name: user.name, email: user.email });
+        const userData=Object.assign({},{ id: user._id, name: user.name, email: user.email });
 
         return res.status(200).json({ token, refreshToken, userData });
     }

@@ -16,6 +16,7 @@ import {
   handleZoom,
 } from "../../eventHandlers/multiplayer-canvas";
 import DrawingPreview from './DrawingPreview';
+import { FaGithub } from "react-icons/fa";
 
 const Canvas = () => {
 
@@ -60,7 +61,7 @@ const Canvas = () => {
     },
     text: {
       mouseDown: startAddText,
-      mouseMove: ()=>{},
+      mouseMove: () => { },
       mouseUp: stopDrawing
     }
   });
@@ -134,9 +135,10 @@ const Canvas = () => {
     socket.on("canvas:update", (data) => {
       const { type, object, target } = data;
 
+      console.log(data);
+
       switch (type) {
         case "object:added":
-          console.log(data);
           fabric.util.enlivenObjects([object], (objects) => {
             objects.forEach((obj) => {
               canvas.add(obj);
@@ -206,7 +208,7 @@ const Canvas = () => {
       canvasObjRef.current = null;
       canvas.dispose();
     };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     if (canvasObjRef && canvasObjRef.current) {
@@ -346,7 +348,7 @@ const Canvas = () => {
           }
       }
     }
-  }, [tool]);
+  }, [tool, socket]);
 
   const handleMouseDown = (canvas) => {
     return (opt) => {
@@ -541,11 +543,9 @@ const Canvas = () => {
 
 
   /* ==============TEXT============== */
-  function startAddText(canvas)
-  {
-    return ({ e })=>
-    {
-      const pointer=canvas.getPointer(e);
+  function startAddText(canvas) {
+    return ({ e }) => {
+      const pointer = canvas.getPointer(e);
       origX = pointer.x;
       origY = pointer.y;
 
@@ -554,7 +554,7 @@ const Canvas = () => {
         top: origY,
         fill: options.currentColor,
         editable: true,
-        fontSize: 23,
+        fontSize: 23
       });
 
       text.set({
@@ -563,7 +563,7 @@ const Canvas = () => {
 
       const obj = text.toJSON(['id']);
       socket.emit("canvas:update", { type: "object:added", object: obj });
-    
+
       canvas.add(text);
       canvas.renderAll();
     }
@@ -582,10 +582,12 @@ const Canvas = () => {
         >
           {/* <Cursor position={cursorPosition} userId={userId} name={user.name} color={color} /> */}
           <CursorPresence />
-          <DrawingPreview />
+          {/* <DrawingPreview /> */}
         </g>
       </svg>
-      <button className='absolute bottom-5 right-24'>btn</button>
+      {/* <button className='absolute bottom-4 left-4 text-4xl transform transition-transform hover:scale-110'>
+        <FaGithub />
+      </button> */}
     </div>
   )
 }

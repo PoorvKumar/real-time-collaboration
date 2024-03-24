@@ -41,7 +41,7 @@ function App() {
           {/* <Route path='/board/:boardId' element={<MultiplayerBoard />} /> */}
           <Route element={<ProtectedRoute />}>
             <Route path='/board/:boardId' element={<MultiplayerBoard />} />
-            <Route path='/workspace/:workspaceId' element={<MultiplayerCanvas />} />
+            <Route path='/room/:roomId' element={<MultiplayerCanvas />} />
             <Route path='/test' element={<Test />} />
           </Route>
         </Routes>

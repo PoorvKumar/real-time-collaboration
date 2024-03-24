@@ -48,7 +48,7 @@ const Cursors = () => {
         socket.off("cursor:update");
         socket.off("cursor:leave");
       };
-    },[socket]);
+    },[ socket ]);
 
   return (
     <>

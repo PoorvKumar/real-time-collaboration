@@ -70,15 +70,14 @@ const Layout = () => {
 
 const MultiplayerCanvas = () => {
 
-  const { workspaceId } = useParams();
+  const { roomId } = useParams();
 
   return (
-    <RoomProvider workspaceId={workspaceId}>
+    <RoomProvider roomId={roomId}>
       <CanvasProvider>
         <div className='relative h-screen overflow-hidden'>
           <Header />
           <Layout />
-
         </div>
       </CanvasProvider>
     </RoomProvider>
