@@ -70,7 +70,7 @@ export const RoomProvider = ({ children, roomId }) => {
             });
         });
 
-        window.addEventListener("beforeunload", handleBeforeUnload);
+        // window.addEventListener("beforeunload", handleBeforeUnload);
 
         const cleanup = () => {
             webSocket.emit("cursor:leave", { userId: user.id });
@@ -84,21 +84,21 @@ export const RoomProvider = ({ children, roomId }) => {
 
         return ()=>
         {
-            window.removeEventListener("beforeunload", handleBeforeUnload);
+            // window.removeEventListener("beforeunload", handleBeforeUnload);
             cleanup();
         };
     }, []);
 
-    const handleBeforeUnload = (event) => {
-        // Emit user:left event before the window is unloaded
-        if (socket) {
-            socket.emit("user:left", { roomId, userId: user.id });
-        }
-        // Customize confirmation message if needed
-        const confirmationMessage = "Are you sure you want to leave?";
-        event.returnValue = confirmationMessage; // For Chrome
-        return confirmationMessage; // For other browsers
-    };    
+    // const handleBeforeUnload = (event) => {
+    //     // Emit user:left event before the window is unloaded
+    //     if (socket) {
+    //         socket.emit("user:left", { roomId, userId: user.id });
+    //     }
+    //     // Customize confirmation message if needed
+    //     const confirmationMessage = "Are you sure you want to leave?";
+    //     event.returnValue = confirmationMessage; // For Chrome
+    //     return confirmationMessage; // For other browsers
+    // };    
 
     const value = {
         socket,

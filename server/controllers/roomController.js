@@ -108,7 +108,23 @@ const joinRoom= async (req,res,next)=>
 {
     try
     {
-        global.io.to("room_1").emit("join:room",{ msg: "this is from inside controller" });
+        const { id }=req.params;
+
+        const room=await Room.findById(id);
+
+        if(room.privacy==="private")
+        {
+            if(!room.participants.include(req.user._id))
+            {
+                return res.status(403).json({ msg: "Unauthorized access to room" });
+            }
+        }
+
+        req.redisClient.sAdd(`room:${id}:activeParticipants`,JSON.stringify(req.user));
+
+        global.io.to(`room_${id}`).emit("user:join",{ user: req.user });
+
+        return res.status(200).json({ message: "User joined the room successfully" });
     }
     catch(err)
     {
@@ -140,6 +156,18 @@ const inviteToRoom= async (req,res,next)=>
     }
 };
 
+const acceptInvite= async (req,res,next)=>
+{
+    try
+    {
+
+    }
+    catch(err)
+    {
+        next(err);
+    }
+};
+
 module.exports={
     getAllRooms,
     getRoomDetails,
@@ -148,5 +176,6 @@ module.exports={
     deleteRoom,
     joinRoom,
     leaveRoom,
-    inviteToRoom
+    inviteToRoom,
+    acceptInvite
 };

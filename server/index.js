@@ -31,34 +31,34 @@ io.on("connection", (socket) => {
     const { roomId, user } = data;
     socket.join("room_" + roomId);
 
-    // User already connected through other socket, we disconnect that connection
-    if (usersToSocket[user.id]) {
-      const prevSocketId = usersToSocket[user.id].socketId;
+    // // User already connected through other socket, we disconnect that connection
+    // if (usersToSocket[user.id]) {
+    //   const prevSocketId = usersToSocket[user.id].socketId;
 
-      if (io.sockets.sockets.has(prevSocketId)) {
-        io.sockets.sockets.get(prevSocketId).disconnect(true);
-      }
-    }
+    //   if (io.sockets.sockets.has(prevSocketId)) {
+    //     io.sockets.sockets.get(prevSocketId).disconnect(true);
+    //   }
+    // }
 
-    // await isUserInRoom(roomId, user.id, (socketId) => {
-    //   io.sockets.sockets.get(socketId).disconnect(true);
-    // });
+    // // await isUserInRoom(roomId, user.id, (socketId) => {
+    // //   io.sockets.sockets.get(socketId).disconnect(true);
+    // // });
 
-    usersToSocket[user.id] = { socketId: socket.id };
-    await addUserToRoom(roomId, { ...user, socketId: socket.id });
+    // usersToSocket[user.id] = { socketId: socket.id };
+    // await addUserToRoom(roomId, { ...user, socketId: socket.id });
 
     socket.to(`room_${roomId}`).emit("user:join", user);
 
-    getUsersInRoom(roomId,(users)=>
-    {
-      io.to(`room_${roomId}`).emit("room:users", { users: users });
-    });
+    // getUsersInRoom(roomId,(users)=>
+    // {
+    //   io.to(`room_${roomId}`).emit("room:users", { users: users });
+    // });
   });
 
   socket.on("user:left", async ({ roomId, userId }) => {
     // console.log(roomId,userId,socket.id);
     delete usersToSocket[userId];
-    await removeUserFromRoom(roomId, userId);
+    // await removeUserFromRoom(roomId, userId);
   });
 
   /* ============CURSOR && CANVAS EVENTS============ */

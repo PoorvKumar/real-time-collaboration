@@ -16,7 +16,7 @@ const helmet=require("helmet");
 const errorMiddleware=require("./middlewares/errorMiddleware");
 
 // REDIS
-connectToRedisClient();
+// connectToRedisClient();
 
 // Routers
 const authRouter=require("./routers/authRouter");
@@ -46,6 +46,12 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(morgan("dev"));
 app.use(helmet());
+
+// app.use((req,res,next)=>
+// {
+//   req.redisClient=redisClient;
+//   next();
+// });
 
 app.get("/", (req, res) => {
   return res.json({ msg: "Server running!" });
