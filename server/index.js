@@ -23,7 +23,7 @@ global.io=io;
 const usersToSocket = {};
 
 io.on("connection", (socket) => {
-  console.log("User connected", socket.id);
+  // console.log("User connected", socket.id);
 
   /* ============ROOM EVENTS============ */
 

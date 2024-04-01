@@ -16,8 +16,8 @@ const Toolbar = () => {
     // },[tool]);
 
     return (
-        <div className='absolute top-[40%] -translate-y-[40%] left-4 flex flex-col gap-y-2'>
-            <div className='bg-white rounded-md p-1.5 flex flex-col items-center shadow-md'>
+        <div className='absolute top-[40%] -translate-y-[40%] left-4 flex flex-col gap-y-2 '>
+            <div className='bg-white dark:bg-[#1e1e1e] rounded-md p-1.5 flex flex-col items-center shadow-md'>
                 {/* <ToolButton 
                     label="Undo"
                     Icon={Undo2}
@@ -34,7 +34,7 @@ const Toolbar = () => {
                     onClick={()=> {}}
                 />
             </div>
-            <div className='bg-white rounded-md p-1.5 flex flex-col gap-y-1 items-center shadow-md'>
+            <div className='bg-white dark:bg-[#1e1e1e] rounded-md p-1.5 flex flex-col gap-y-1 items-center shadow-md'>
                 <ToolButton
                     label={"Select"}
                     Icon={MousePointer2}
@@ -84,7 +84,7 @@ const Toolbar = () => {
                     isActive={tool==='text'}
                 />
             </div>
-            <div className='bg-white rounded-md p-1.5 flex flex-col items-center shadow-md'>
+            <div className='bg-white dark:bg-[#1e1e1e] rounded-md p-1.5 flex flex-col items-center shadow-md'>
                 {/* <ToolButton 
                     label="Undo"
                     Icon={Undo2}

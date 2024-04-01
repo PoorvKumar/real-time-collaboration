@@ -17,6 +17,7 @@ import {
 } from "../../eventHandlers/multiplayer-canvas";
 import DrawingPreview from './DrawingPreview';
 import { FaGithub } from "react-icons/fa";
+import { useTheme } from '@/context/ThemeContext';
 
 const Canvas = () => {
 
@@ -36,6 +37,9 @@ const Canvas = () => {
   const { vpt, setVpt, zoomLvl, setZoomLvl, tool, setTool, canvasData } = useCanvas();
 
   const drawingPositionsRef = useRef([]);
+
+  const { dark }=useTheme();
+  // console.log(dark);
 
   // console.log(tool,Date.now());
 
@@ -73,7 +77,7 @@ const Canvas = () => {
 
   let options = {
     currentMode: '',
-    currentColor: '#000000',
+    currentColor: dark ? '#ffffff' : '#000000',
     currentWidth: 2,
     fill: false,
     group: {},
@@ -110,7 +114,7 @@ const Canvas = () => {
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: window.innerWidth,
       height: window.innerHeight,
-      backgroundColor: "white",
+      backgroundColor: dark? "#1e1e1e":"white",
       freeDrawingBrush: new fabric.PencilBrush(),
     });
 
@@ -308,7 +312,7 @@ const Canvas = () => {
           canvasObjRef.current.isDrawingMode = true;
 
           canvasObjRef.current.freeDrawingBrush.width = 1; // Set brush width
-          canvasObjRef.current.freeDrawingBrush.color = 'black'; // Set brush color
+          canvasObjRef.current.freeDrawingBrush.color = dark? 'white':'black'; // Set brush color
           canvasObjRef.current.freeDrawingBrush.curveStep = 10;
           canvasObjRef.current.freeDrawingBrush.strokeUniform = true;
           break;

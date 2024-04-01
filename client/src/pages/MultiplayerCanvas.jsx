@@ -35,7 +35,7 @@ const Layout = () => {
 
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center dark:bg-[#1e1e1e]">
       {/* When both tabs are active, we can resize ourselves */}
       {activeTab === 'both' && (
         <ResizablePanelGroup direction="horizontal">

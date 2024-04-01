@@ -16,7 +16,7 @@ const Header = () => {
   const { activeTab, setActiveTab } = useCanvas();
 
   return (
-    <div className="fixed top-0 z-50 w-full bg-white shadow-md flex items-center justify-between px-4 py-2">
+    <div className="fixed top-0 z-50 bg-white dark:bg-[#1e1e1e] dark:border w-full shadow-md flex items-center justify-between px-4 py-2">
       {/* Left side */}
       <div className="flex items-center space-x-4">
         <div className='flex items-center gap-2'>
@@ -34,21 +34,21 @@ const Header = () => {
       {/* Middle */}
       <div className="flex justify-center">
         <button
-          className={`flex-grow px-4 py-1 border text-sm rounded-l-md ${activeTab === "canvas" ? "bg-[#d8e6fd] text-[#1e40af]" : "bg-white text-black"
+          className={`flex-grow px-4 py-1 border text-sm rounded-l-md ${activeTab === "canvas" ? "bg-[#d8e6fd] dark:bg-[#243249] text-[#1e40af]" : ""
             }`}
           onClick={() => setActiveTab("canvas")}
         >
           Canvas
         </button>
         <button
-          className={`flex-grow px-4 py-1 border text-sm ${activeTab === "both" ? "bg-[#d8e6fd] text-[#1e40af]" : "bg-white text-black"
+          className={`flex-grow px-4 py-1 border text-sm ${activeTab === "both" ? "bg-[#d8e6fd] dark:bg-[#243249] text-[#1e40af]" : ""
             }`}
           onClick={() => setActiveTab("both")}
         >
           Both
         </button>
         <button
-          className={`flex-grow px-4 py-1 border text-sm rounded-r-md ${activeTab === "editor" ? "bg-[#d8e6fd] text-[#1e40af]" : "bg-white text-black"
+          className={`flex-grow px-4 py-1 border text-sm rounded-r-md ${activeTab === "editor" ? "bg-[#d8e6fd] dark:bg-[#243249] text-[#1e40af]" : ""
             }`}
           onClick={() => setActiveTab("editor")}
         >

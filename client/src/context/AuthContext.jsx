@@ -93,7 +93,7 @@ const AuthProvider = ({ children }) => {
             setLoading(false);
             toast.error("Login Error",{
                 position: "top-right",
-                theme: "dark"
+                // theme: "dark"
             });
         }
 

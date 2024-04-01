@@ -26,7 +26,7 @@ export const RoomProvider = ({ children, roomId }) => {
             toast.success("Connection Established", {
                 position: "bottom-left",
                 autoClose: 3000,
-                theme: "dark"
+                // theme: "dark"
             });
         });
 
@@ -35,7 +35,7 @@ export const RoomProvider = ({ children, roomId }) => {
             toast.error("Error connecting to websocket", {
                 position: "bottom-left",
                 autoClose: 3000,
-                theme: "dark"
+                // theme: "dark"
             });
         });
 
@@ -60,15 +60,15 @@ export const RoomProvider = ({ children, roomId }) => {
         //     });
         // });
 
-        webSocket.on("disconnect",()=>
-        {
-            setIsConnected(false);
-            toast.warn("Try Again", {
-                position: "bottom-left",
-                autoClose: 3000,
-                theme: "dark"
-            });
-        });
+        // webSocket.on("disconnect",()=>
+        // {
+        //     setIsConnected(false);
+        //     toast.warn("Try Again", {
+        //         position: "bottom-left",
+        //         autoClose: 3000,
+        //         // theme: "dark"
+        //     });
+        // });
 
         // window.addEventListener("beforeunload", handleBeforeUnload);
 

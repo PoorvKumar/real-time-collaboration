@@ -12,10 +12,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import DashLayout from './layouts/DashLayout';
 import Test from "./pages/Test";
 import MultiplayerCanvas from "./pages/MultiplayerCanvas";
+import { useTheme } from "./context/ThemeContext";
+import BrowseRooms from "./components/dashboard/BrowseRooms";
+import YourRooms from "./components/dashboard/YourRooms";
 
 function App() {
 
   const { isAuthenticated, loading } = useAuthenticate();
+  const { dark }=useTheme();
 
   if (loading) {
     return <>
@@ -32,7 +36,8 @@ function App() {
           <Route path='/signup' element={<SignUp />} />
           {isAuthenticated ? (
             <Route path='/' element={<DashLayout />}>
-              <Route index element={<Dashboard />} />
+              <Route index element={<BrowseRooms />} />
+              <Route path="/your-rooms" element={<YourRooms />} />
             </Route>
           ) : (
             <Route path='/' element={<Landing />} />
@@ -46,7 +51,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-      <ToastContainer autoClose={5000} closeOnClick draggable />
+      <ToastContainer autoClose={5000} closeOnClick draggable theme={dark?"light":"dark"} />
     </>
   )
 }
