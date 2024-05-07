@@ -3,13 +3,9 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const path = require("path");
-const http = require("http");
-const { Server } = require("socket.io");
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 const mongoose = require("mongoose");
-const { allowedOrigins } = require("./config/config");
-const { redisClient , connectToRedisClient }=require("./config/redisClient");
 const morgan=require("morgan");
 const helmet=require("helmet");
 
@@ -17,6 +13,51 @@ const errorMiddleware=require("./middlewares/errorMiddleware");
 
 // REDIS
 // connectToRedisClient();
+// const { createClient } = require("redis");
+// const client = createClient({
+//   url: process.env.REDIS_URL,
+// });
+// client.on("connect", () =>
+//   console.log(`Redis is connected on port ${process.env.REDIS_PORT}`)
+// );
+// client.on("error", (err) => {
+//   console.error("Error Connecting to Redis Client:", err);
+// });
+
+// if (process.env.NODE_ENV !== "test") {
+//   (async () => {
+//     await client.connect();
+//   })();
+
+//   client.set("visits", 0);
+
+//   app.get("/visits", async (req, res) => {
+//     try {
+//       const currentVisits = await client.get("visits");
+//       let visits = parseInt(currentVisits) || 0;
+//       visits++;
+//       await client.set("visits", visits);
+//       res.send("Number of visits is: " + visits);
+//     } catch (error) {
+//       console.error("Error getting or setting visit count:", error);
+//       res.status(500).send("Internal Server Error");
+//     }
+//   });
+
+//   // Attach redisClient middleware
+//   app.use(async (req, res, next) => {
+//     try {
+//       if (!client) {
+//         await client.connect();
+//       }
+//       req.redisClient = client;
+//       next();
+//     } catch (err) {
+//       console.error("Error connecting to Redis:", err);
+//       next(err);
+//     }
+//   });
+// }
 
 // Routers
 const authRouter=require("./routers/authRouter");
@@ -46,12 +87,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(morgan("dev"));
 app.use(helmet());
-
-// app.use((req,res,next)=>
-// {
-//   req.redisClient=redisClient;
-//   next();
-// });
 
 app.get("/", (req, res) => {
   return res.json({ msg: "Server running!" });

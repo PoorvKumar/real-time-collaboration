@@ -212,7 +212,7 @@ const Canvas = () => {
       canvasObjRef.current = null;
       canvas.dispose();
     };
-  }, [socket]);
+  }, [socket,dark]);
 
   useEffect(() => {
     if (canvasObjRef && canvasObjRef.current) {
@@ -352,7 +352,7 @@ const Canvas = () => {
           }
       }
     }
-  }, [tool, socket]);
+  }, [tool, socket, dark]);
 
   const handleMouseDown = (canvas) => {
     return (opt) => {

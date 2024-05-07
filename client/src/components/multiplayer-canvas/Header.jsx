@@ -8,12 +8,14 @@ import { useRoom } from '@/context/RoomContext';
 import { Button } from '../ui/button';
 import { FaEllipsisH } from 'react-icons/fa';
 import Hint from '../Hint';
+import { useTheme } from '@/context/ThemeContext';
 
 const Header = () => {
 
   const { users } = useRoom();
   // console.log(users);
   const { activeTab, setActiveTab } = useCanvas();
+  const { toggleDarkMode }=useTheme();
 
   return (
     <div className="fixed top-0 z-50 bg-white dark:bg-[#1e1e1e] dark:border w-full shadow-md flex items-center justify-between px-4 py-2">
@@ -59,7 +61,7 @@ const Header = () => {
       {/* Right Side */}
       <div className="flex items-center gap-4">
         {/* Avatar */}
-        <div className='flex'>
+        <div className='flex' onClick={toggleDarkMode}>
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>

@@ -1,13 +1,6 @@
 const app = require("./app");
 const http = require("http");
 const { Server } = require("socket.io");
-const {
-  redisClient,
-  addUserToRoom,
-  removeUserFromRoom,
-  getUsersInRoom,
-  isUserInRoom,
-} = require("./config/redisClient");
 
 const { allowedOrigins } = require("./config/config");
 
