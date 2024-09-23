@@ -8,56 +8,57 @@ const corsOptions = require("./config/corsOptions");
 const mongoose = require("mongoose");
 const morgan=require("morgan");
 const helmet=require("helmet");
+const rateLimit=require("express-rate-limit");
 
 const errorMiddleware=require("./middlewares/errorMiddleware");
 
 // REDIS
 // connectToRedisClient();
-// const { createClient } = require("redis");
-// const client = createClient({
-//   url: process.env.REDIS_URL,
-// });
-// client.on("connect", () =>
-//   console.log(`Redis is connected on port ${process.env.REDIS_PORT}`)
-// );
-// client.on("error", (err) => {
-//   console.error("Error Connecting to Redis Client:", err);
-// });
+const { createClient } = require("redis");
+const client = createClient({
+  url: process.env.REDIS_URL,
+});
+client.on("connect", () =>
+  console.log(`Redis is connected on port ${process.env.REDIS_PORT}`)
+);
+client.on("error", (err) => {
+  console.error("Error Connecting to Redis Client:", err);
+});
 
-// if (process.env.NODE_ENV !== "test") {
-//   (async () => {
-//     await client.connect();
-//   })();
+if (process.env.NODE_ENV !== "test") {
+  (async () => {
+    await client.connect();
+  })();
 
-//   client.set("visits", 0);
+  client.set("visits", 0);
 
-//   app.get("/visits", async (req, res) => {
-//     try {
-//       const currentVisits = await client.get("visits");
-//       let visits = parseInt(currentVisits) || 0;
-//       visits++;
-//       await client.set("visits", visits);
-//       res.send("Number of visits is: " + visits);
-//     } catch (error) {
-//       console.error("Error getting or setting visit count:", error);
-//       res.status(500).send("Internal Server Error");
-//     }
-//   });
+  app.get("/visits", async (req, res) => {
+    try {
+      const currentVisits = await client.get("visits");
+      let visits = parseInt(currentVisits) || 0;
+      visits++;
+      await client.set("visits", visits);
+      res.send("Number of visits is: " + visits);
+    } catch (error) {
+      console.error("Error getting or setting visit count:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  });
 
-//   // Attach redisClient middleware
-//   app.use(async (req, res, next) => {
-//     try {
-//       if (!client) {
-//         await client.connect();
-//       }
-//       req.redisClient = client;
-//       next();
-//     } catch (err) {
-//       console.error("Error connecting to Redis:", err);
-//       next(err);
-//     }
-//   });
-// }
+  // Attach redisClient middleware
+  app.use(async (req, res, next) => {
+    try {
+      if (!client) {
+        await client.connect();
+      }
+      req.redisClient = client;
+      next();
+    } catch (err) {
+      console.error("Error connecting to Redis:", err);
+      next(err);
+    }
+  });
+}
 
 // Routers
 const authRouter=require("./routers/authRouter");
@@ -87,6 +88,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(morgan("dev"));
 app.use(helmet());
+
+app.use(rateLimit({
+  windowMs: 15*60*1000,
+  limit: 100
+}));
 
 app.get("/", (req, res) => {
   return res.json({ msg: "Server running!" });

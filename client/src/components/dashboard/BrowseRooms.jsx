@@ -13,43 +13,7 @@ const BrowseRooms = () => {
             name: 'Collaborative Workspace Room 1',
             tags: ['Collaboration', 'Workspace', 'Teamwork'],
             description: 'A room for collaborative work, with access to a shared canvas and code editor.',
-        },
-        {
-            id: 2,
-            thumbnail: 'https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4',
-            name: 'Collaborative Workspace Room 2',
-            tags: ['Design', 'Development', 'Project Management'],
-            description: 'Another room for collaborative work, with access to a shared canvas and code editor.',
-        },
-        {
-            id: 1,
-            thumbnail: 'https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4',
-            name: 'Collaborative Workspace Room 1',
-            tags: ['Collaboration', 'Workspace', 'Teamwork'],
-            description: 'A room for collaborative work, with access to a shared canvas and code editor.',
-        },
-        {
-            id: 2,
-            thumbnail: 'https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4',
-            name: 'Collaborative Workspace Room 2',
-            tags: ['Design', 'Development', 'Project Management'],
-            description: 'Another room for collaborative work, with access to a shared canvas and code editor.',
-        },
-        {
-            id: 1,
-            thumbnail: 'https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4',
-            name: 'Collaborative Workspace Room 1',
-            tags: ['Collaboration', 'Workspace', 'Teamwork'],
-            description: 'A room for collaborative work, with access to a shared canvas and code editor.',
-        },
-        {
-            id: 2,
-            thumbnail: 'https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4',
-            name: 'Collaborative Workspace Room 2',
-            tags: ['Design', 'Development', 'Project Management'],
-            description: 'Another room for collaborative work, with access to a shared canvas and code editor.',
-        },
-        // Add more rooms as needed
+        }
     ];
 
 
