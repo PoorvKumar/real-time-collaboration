@@ -7,7 +7,7 @@ const Landing = () => {
   const { dark: isDarkMode , toggleDarkMode } = useTheme();
 
   return (
-    <div className={`h-screen ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`h-screen ${isDarkMode ? 'dark:bg-gray-900' : ''}`}>
       <div className="bg-white dark:bg-gray-900 transition-colors duration-300">
         <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
           <motion.div
