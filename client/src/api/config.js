@@ -1,6 +1,5 @@
 const config={
-    baseURL: "http://localhost:5000/api",
-    // baseURL: "http://172.25.103.251:5000/api", //wsl host
+    baseURL: import.meta.env.VITE_SERVER_URL+"/api",
 };
 
 export default config;
